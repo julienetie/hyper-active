@@ -1,5 +1,8 @@
 # hyper-active
-A library for JavaScript event management
+A library for DOM event management
+
+[Prototype of api design](https://github.com/julienetie/hyper-active/wiki/API-prototype)
+
 ```php
 (Prototype, not for production)
 ```
