@@ -1,16 +1,16 @@
-# hyper-active
-A library for DOM event management
+# Yoga Fire
+Advanced Event Delegation
 
-[Prototype of api design](https://github.com/julienetie/hyper-active/wiki/API-prototype)
+[Prototype of api design](https://github.com/julienetie/yogafire/wiki/API-prototype)
 
 ```php
 (Prototype, not for production)
 ```
-hyperActive has no dependencies and can be used in any browser based project.
-hyperActive supports virtual-dom event delegation via Hypertext
+yogaFire has no dependencies and can be used in any browser based project.
+yogaFire supports virtual-dom event delegation via yogaFire
 
 
-hyperActive is an events library that provides the following:
+yogaFire is an events library that provides the following:
 
 #### Event delgation detectin.
 - Event delegation by selector comparision
@@ -25,14 +25,14 @@ hyperActive is an events library that provides the following:
 - addMutationListener (via WeakMaps)
 
 ## Events for Hypertext 
-hyperActive integrates with Hypertext's eventStore:
+yogaFire integrates with Hypertext's eventStore:
 
 ```javascript
 
 import { eventStore } from 'hypertext';
-import { hyperActive } from 'hyper-active';
+import { hyperActive } from 'yogafire';
 
-hyperActive.getEventStore(eventStore ...);
+yogaFire.getEventStore(eventStore ...);
 ```
 When delegating by node comparision, the eventStore should contain all created elements that require event management.
 At certain times when the UI is updated or a particular interface is being patched and an element is being created or removed, the eventStore will also reflect those changes (important to prevent memory leaks).
