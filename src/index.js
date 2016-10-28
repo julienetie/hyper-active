@@ -2,14 +2,21 @@ import isArray from '../libs/isArray';
 import { isElement } from '../libs/isElement';
 
 const isHTMLCollection = (value) => {
-	return value.item(0) === value[0];
+	if (value.hasOwnProperty('item')) {
+		return value.item(0) === value[0];
+	}
+	return false;
+}
+
+const isString = (value) => {
+	return typeof value === 'string';
 }
 
 
 const getElementReference = (value) => {
 	let elements;
 
-	if (typeof value === 'string') {
+	if (isString(value)) {
 		if (value.charAt(0) === '@') {
 			// get hyperElement as array
 		} else {
@@ -30,8 +37,31 @@ const getElementReference = (value) => {
 function yoga(elementReference, eventDescription, callback, interfaces) {
 	// Get Array of elements.
 	let elements = getElementReference(elementReference);
+	let events;
 
-	console.info(elements)
+	// Check if eventDescription is a callback or string.
+	if (isString(eventDescription)) {
+		events = eventDescription.split(':');
+	} else {
+		// Pass hyperelment with addeventlistener (a wrapper to only use addeventlistener)
+		return;
+	}
+
+
+	if (typeof callback === 'function') {
+		// Pass delegated event info.
+	}
+
+	if (interfaces) {
+		if (isArray(interfaces)) {
+			// Pass delegated event info.
+		} else if (isString(interfaces)) {
+
+		}
+	}
+
+
+	console.info(elements, events, callback, interfaces)
 }
 
 

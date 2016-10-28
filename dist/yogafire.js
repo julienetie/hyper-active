@@ -215,7 +215,6 @@ var set = function set(object, property, value, receiver) {
  */
 
 /** Used as the semantic version number. */
-/** Detect free variable `global` from Node.js. */
 var freeGlobal = (typeof global === 'undefined' ? 'undefined' : _typeof(global)) == 'object' && global && global.Object === Object && global;
 
 /** Detect free variable `self`. */
@@ -224,35 +223,12 @@ var freeSelf = (typeof self === 'undefined' ? 'undefined' : _typeof(self)) == 'o
 /** Used as a reference to the global object. */
 var root = freeGlobal || freeSelf || Function('return this')();
 
-// No operation performed.
-
+/** Detect free variable `exports`. */
+var isArray = Array.isArray;
 
 /*------------------------------------------------------------------------*/
 
-/**
- * Checks if `value` is classified as an `Array` object.
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is an array, else `false`.
- * @example
- *
- * _.isArray([1, 2, 3]);
- * // => true
- *
- * _.isArray(document.body.children);
- * // => false
- *
- * _.isArray('abc');
- * // => false
- *
- * _.isArray(_.noop);
- * // => false
- */
-var isArray = Array.isArray;
+// Add methods that return unwrapped values in chain sequences.
 
 /**
  * @license
@@ -265,7 +241,6 @@ var isArray = Array.isArray;
  */
 
 /** Used as the semantic version number. */
-/** `Object#toString` result references. */
 var objectTag = '[object Object]';
 
 /** Detect free variable `global` from Node.js. */
@@ -277,16 +252,7 @@ var freeSelf$1 = (typeof self === 'undefined' ? 'undefined' : _typeof(self)) == 
 /** Used as a reference to the global object. */
 var root$1 = freeGlobal$1 || freeSelf$1 || Function('return this')();
 
-/*--------------------------------------------------------------------------*/
-
-/**
- * Creates a unary function that invokes `func` with its argument transformed.
- *
- * @private
- * @param {Function} func The function to wrap.
- * @param {Function} transform The argument transform.
- * @returns {Function} Returns the new function.
- */
+/** Detect free variable `exports`. */
 function overArg(func, transform) {
   return function (arg) {
     return func(transform(arg));
@@ -318,28 +284,7 @@ var objectToString = objectProto.toString;
 /** Built-in value references. */
 var getPrototype = overArg(Object.getPrototypeOf, Object);
 
-// No operation performed.
-
-
-/*------------------------------------------------------------------------*/
-
-/**
- * Checks if `value` is likely a DOM element.
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a DOM element, else `false`.
- * @example
- *
- * _.isElement(document.body);
- * // => true
- *
- * _.isElement('<body>');
- * // => false
- */
+/** Used to lookup unminified function names. */
 function isElement(value) {
   return value != null && value.nodeType === 1 && isObjectLike(value) && !isPlainObject(value);
 }
@@ -412,14 +357,25 @@ function isPlainObject(value) {
   return typeof Ctor == 'function' && Ctor instanceof Ctor && funcToString.call(Ctor) == objectCtorString;
 }
 
+/*------------------------------------------------------------------------*/
+
+// Add methods that return unwrapped values in chain sequences.
+
 var isHTMLCollection = function isHTMLCollection(value) {
-	return value.item(0) === value[0];
+	if (value.hasOwnProperty('item')) {
+		return value.item(0) === value[0];
+	}
+	return false;
+};
+
+var isString = function isString(value) {
+	return typeof value === 'string';
 };
 
 var getElementReference = function getElementReference(value) {
 	var elements = void 0;
 
-	if (typeof value === 'string') {
+	if (isString(value)) {
 		if (value.charAt(0) === '@') {
 			// get hyperElement as array
 		} else {
@@ -438,8 +394,27 @@ var getElementReference = function getElementReference(value) {
 function yoga(elementReference, eventDescription, callback, interfaces) {
 	// Get Array of elements.
 	var elements = getElementReference(elementReference);
+	var events = void 0;
 
-	console.info(elements);
+	// Check if eventDescription is a callback or string.
+	if (isString(eventDescription)) {
+		events = eventDescription.split(':');
+	} else {
+		// Pass hyperelment with addeventlistener (a wrapper to only use addeventlistener)
+		return;
+	}
+
+	if (typeof callback === 'function') {
+		// Pass delegated event info.
+	}
+
+	if (interfaces) {
+		if (isArray(interfaces)) {
+			// Pass delegated event info.
+		} else if (isString(interfaces)) {}
+	}
+
+	console.info(elements, events, callback, interfaces);
 }
 
 window.yoga = yoga;
