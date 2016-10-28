@@ -361,8 +361,41 @@ function isPlainObject(value) {
 
 // Add methods that return unwrapped values in chain sequences.
 
+// import { once } from 'run-once';
+
+var eventTypeStore = {};
+
+var updateEventTypeStore = function updateEventTypeStore(newEvent, watchElements) {
+	var newEventLength = newEvent.length;
+
+	for (var i = 0; i < newEventLength; i++) {
+		if (!eventTypeStore.hasOwnProperty(newEvent[i])) {
+			eventTypeStore[newEvent[i]] = watchElements;
+			console.log('type of event', newEvent[i]);
+			window.addEventListener(newEvent[i], clickEventDelegator, true);
+		}
+	}
+};
+
+var clickEventDelegator = function clickEventDelegator(e) {
+	var target = e.target;
+
+	var clickWatchElements = eventTypeStore.click;
+	var clickWatchElementsLength = clickWatchElements.length;
+	for (var i = 0; i < clickWatchElementsLength; i++) {
+		if (clickWatchElements[i] === target) {
+			console.log('fiyaaaaa');
+		}
+	}
+
+	fireArguments.e = e;
+	fireArguments.target = target;
+	fireArguments.parent = target.parent;
+	// console.info('window clicked')
+};
+
 var isHTMLCollection = function isHTMLCollection(value) {
-	if (value.hasOwnProperty('item')) {
+	if (typeof value.item === 'function') {
 		return value.item(0) === value[0];
 	}
 	return false;
@@ -391,20 +424,29 @@ var getElementReference = function getElementReference(value) {
 	return elements;
 };
 
-function yoga(elementReference, eventDescription, fireCallback, interfaces) {
+// e, target, parent, interface, data
+var fireArguments = {};
+
+function fire(callback) {
+	// console.warn(callback);
+	callback.call(this, fireArguments);
+}
+
+function yoga(elementReference, eventDescription, yogaCallback, interfaces) {
 	// Get Array of elements.
 	var elements = getElementReference(elementReference);
 	var events = void 0;
 
-	// Check if eventDescription is a fireCallback or string.
+	// Check if eventDescription is a yogaCallback or string.
 	if (isString(eventDescription)) {
 		events = eventDescription.split(':');
+		updateEventTypeStore(events, elements);
 	} else {
 		// Pass hyperelment with addeventlistener (a wrapper to only use addeventlistener)
 		return;
 	}
 
-	if (typeof fireCallback === 'function') {
+	if (typeof yogaCallback === 'function') {
 		// Pass delegated event info.
 	}
 
@@ -412,11 +454,22 @@ function yoga(elementReference, eventDescription, fireCallback, interfaces) {
 		if (isArray(interfaces)) {
 			// Pass delegated event info.
 		} else if (isString(interfaces)) {}
+		fireArguments.interface = interfaces;
 	}
 
-	console.info(elements, events, fireCallback, interfaces);
+	// Push arguments to fireArguments for devs access.
+	// fireArguments.e = 'this is e'//{target: {parentElement: null}};
+	// fireArguments.target = 'this is target'//fireArguments.e.target;
+	// fireArguments.parent = 'this is parent'//fireArguments.e.target.parentElement;
+	// fireArguments.interface = 'this is interface'//null;
+	fireArguments.data = 'this is data'; //null;
+
+	// Call fire as prop
+	yogaCallback.call(this, fire);
+	// console.info(elements, events, yogaCallback, interfaces)
 }
 
+// console.log('yooo')
 window.yoga = yoga;
 
 exports.yoga = yoga;

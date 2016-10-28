@@ -30,6 +30,7 @@
     "rollup-watch": "^2.5.0"
   },
   "dependencies": {
-    "lodash-es": "^4.16.4"
+    "lodash-es": "^4.16.4",
+    "run-once": "^1.0.0"
   }
 }
