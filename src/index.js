@@ -33,13 +33,18 @@ const getElementReference = (value) => {
 }
 
 
+function fire(callback){
+	console.warn(callback);
+}
 
-function yoga(elementReference, eventDescription, callback, interfaces) {
+
+
+function yoga(elementReference, eventDescription, fireCallback, interfaces) {
 	// Get Array of elements.
 	let elements = getElementReference(elementReference);
 	let events;
 
-	// Check if eventDescription is a callback or string.
+	// Check if eventDescription is a fireCallback or string.
 	if (isString(eventDescription)) {
 		events = eventDescription.split(':');
 	} else {
@@ -48,7 +53,7 @@ function yoga(elementReference, eventDescription, callback, interfaces) {
 	}
 
 
-	if (typeof callback === 'function') {
+	if (typeof fireCallback === 'function') {
 		// Pass delegated event info.
 	}
 
@@ -61,7 +66,11 @@ function yoga(elementReference, eventDescription, callback, interfaces) {
 	}
 
 
-	console.info(elements, events, callback, interfaces)
+	console.info(elements, events, fireCallback, interfaces)
+
+
+
+
 }
 
 

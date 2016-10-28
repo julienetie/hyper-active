@@ -391,12 +391,12 @@ var getElementReference = function getElementReference(value) {
 	return elements;
 };
 
-function yoga(elementReference, eventDescription, callback, interfaces) {
+function yoga(elementReference, eventDescription, fireCallback, interfaces) {
 	// Get Array of elements.
 	var elements = getElementReference(elementReference);
 	var events = void 0;
 
-	// Check if eventDescription is a callback or string.
+	// Check if eventDescription is a fireCallback or string.
 	if (isString(eventDescription)) {
 		events = eventDescription.split(':');
 	} else {
@@ -404,7 +404,7 @@ function yoga(elementReference, eventDescription, callback, interfaces) {
 		return;
 	}
 
-	if (typeof callback === 'function') {
+	if (typeof fireCallback === 'function') {
 		// Pass delegated event info.
 	}
 
@@ -414,7 +414,7 @@ function yoga(elementReference, eventDescription, callback, interfaces) {
 		} else if (isString(interfaces)) {}
 	}
 
-	console.info(elements, events, callback, interfaces);
+	console.info(elements, events, fireCallback, interfaces);
 }
 
 window.yoga = yoga;
