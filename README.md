@@ -35,6 +35,7 @@ or...
 - Supports IE9+ (No legacy bloat).
 - Pollyfills and normalises events inconsistencies.
 - Multiple target elements.
+- Multiple events per yoga call.
 - Multiple yoga calls without overhead.
 - Extended parameters: event, target, parent, normalisation, interface and data.
 - Performance ideal for complex pages and weak mobile devices.
