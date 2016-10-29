@@ -3,11 +3,75 @@
 <head>
 	<meta charset="UTF-8">
 	<title>YogaFire</title>
+	<style>
+	html,
+	body{
+		margin:0;
+		position: absolute;
+		width: 100%;
+		height: 100%;
+	}
+
+		.target1,
+		.target2,
+		#target3{
+			width: 6rem;
+		}
+
+		.target1{
+			padding: 1rem;
+			background: yellow;
+
+		}
+
+		.target2{
+			padding: 1rem;
+			background: blue;
+			margin: 20% auto;
+
+			
+		}
+
+		#target3{
+			padding: 1rem;
+					margin-left: 40rem;
+			background: green;
+			
+		}
+	</style>
 </head>
 <body>
-<div class='test'>
+
+<div class='target1'>
 	TEST
 </div>
+
+<div class='target2'>
+	TEST 2
+</div>
+
+<div id='target3'>
+	TEST 3
+</div>
+
 	<script src="../dist/yogafire.js"></script>
+	<script>
+		yoga(['.target1','.target2'],'click:mouseover:mouseout:mousedown:dblclick',(fire)=>{
+  			return fire(({e, target, data, interface})=>{
+  				console.info('Hello world', e.type)
+  			});
+		},['someInterface']);
+
+		yoga(['#target3'],'click:mouseover:mouseout:mousedown:dblclick',(fire)=>{
+  			return fire(({e, target, data, interface})=>{
+  				console.info('Hello world', e.type)
+  			});
+		},['someInterface']);
+	</script>
 </body>
 </html>
+
+
+
+
+
