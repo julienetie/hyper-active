@@ -2,16 +2,40 @@ import isArray from '../libs/isArray';
 import { isElement } from '../libs/isElement';
 import { isString, isHTMLCollection } from './utilities/conditions';
 
+
+/**
+ * Stores all event delegation event types and the target elements.
+ */
 const eventTypesStore = {};
+
+
+/**
+ * The arguments to be passed to the fire API callback.
+ */
 let fireArguments = {};
 
-const ev = {};
-	ev.handleEvent = function(e) {
-		eventDelegator(e, this.callback, this.eventType)
-	}
+
+/**
+ * The context passed to addEventListener.
+ */
+const eventHandler = {};
 
 
-function addGlobalEvent(eventType, i, eventCallback, callback){
+/**
+ * The handleEvent property for eventListeners.
+ */
+eventHandler.handleEvent = function(e) {
+	eventDelegator(e, this.callback, this.eventType)
+}
+
+
+/**
+ * Adds an event listener for each event to the window object.
+ * @param {string} eventType - Type of event.
+ * @param {Number} i - eventType index.
+ * @param {Function} callback - The API callback. 
+ */
+function addGlobalEvent(eventType, i, callback){
 	var add = function(e){
 		console.log(e,callback,eventType[i]);
 		eventDelegator(e, callback, eventType[i])
@@ -20,16 +44,22 @@ function addGlobalEvent(eventType, i, eventCallback, callback){
 }
 
 
-
+/**
+ * Maintains the eventTypeStore and element targets.
+ * @param {string} eventType - Type of event.
+ * @param {Array} watchElements - Elements to watch.
+ * @param {Function} callback - The API callback. 
+ */
 function updateEventTypeStore (eventType, watchElements, callback){
 	const newEventLength = eventType.length;
 	let listenerToRemove;
 	let i = 0;
+
 	this.callback = callback;
 	
 	for (let i = 0; i < newEventLength; i++) {
 		this.eventType = eventType[i];
-		
+
 		/**
 		 * only create new eventType entries if not yet properties.
 		 */
@@ -45,6 +75,12 @@ function updateEventTypeStore (eventType, watchElements, callback){
 }
 
 
+/**
+ * Compares targets to event targets.
+ * @param {Object} e - Event.
+ * @param {Function} callback - The API callback.
+ * @param {string} eventType - The type of event.
+ */
 const eventDelegator = (e, callback, eventType) => {
 	const target = e.target;
 	const watchElements = eventTypesStore[eventType];
@@ -142,6 +178,7 @@ function yoga(targets, eventDescription, yogaCallback, interfaces) {
 	let elements = getTargetsAsElements(targets);
 	let events;
 
+
 	// Check if eventDescription is a yogaCallback or string.
 	if (isString(eventDescription)) {
 		/**
@@ -156,7 +193,6 @@ function yoga(targets, eventDescription, yogaCallback, interfaces) {
 		// @TODO: hyperelment with addeventlistener (a wrapper to only use addeventlistener)
 		return;
 	}
-
 
 
 	/**
@@ -183,7 +219,7 @@ function yoga(targets, eventDescription, yogaCallback, interfaces) {
 		/**
 		 * Updates eventTypes and the associated callback.
 		 */ 
-		updateEventTypeStore.call(ev,events, elements, newCallback);
+		updateEventTypeStore.call(eventHandler,events, elements, newCallback);
 
 	}
 }

@@ -372,18 +372,39 @@ var isString = function isString(value) {
 	return typeof value === 'string';
 };
 
+/**
+ * Stores all event delegation event types and the target elements.
+ */
 var eventTypesStore = {};
+
+/**
+ * The arguments to be passed to the fire API callback.
+ */
 var fireArguments = {};
 
-var ev = {};
-ev.handleEvent = function (e) {
+/**
+ * The context passed to addEventListener.
+ */
+var eventHandler = {};
+
+/**
+ * The handleEvent property for eventListeners.
+ */
+eventHandler.handleEvent = function (e) {
 	eventDelegator(e, this.callback, this.eventType);
 };
 
+/**
+ * Maintains the eventTypeStore and element targets.
+ * @param {string} eventType - Type of event.
+ * @param {Array} watchElements - Elements to watch.
+ * @param {Function} callback - The API callback. 
+ */
 function updateEventTypeStore(eventType, watchElements, callback) {
 	var newEventLength = eventType.length;
 	var listenerToRemove = void 0;
 	var i = 0;
+
 	this.callback = callback;
 
 	for (var _i = 0; _i < newEventLength; _i++) {
@@ -403,6 +424,12 @@ function updateEventTypeStore(eventType, watchElements, callback) {
 	}
 }
 
+/**
+ * Compares targets to event targets.
+ * @param {Object} e - Event.
+ * @param {Function} callback - The API callback.
+ * @param {string} eventType - The type of event.
+ */
 var eventDelegator = function eventDelegator(e, callback, eventType) {
 	var target = e.target;
 	var watchElements = eventTypesStore[eventType];
@@ -532,7 +559,7 @@ function yoga(targets, eventDescription, yogaCallback, interfaces) {
 		/**
    * Updates eventTypes and the associated callback.
    */
-		updateEventTypeStore.call(ev, events, elements, newCallback);
+		updateEventTypeStore.call(eventHandler, events, elements, newCallback);
 	}
 }
 
