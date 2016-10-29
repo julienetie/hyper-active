@@ -1,44 +1,49 @@
-# Yoga Fire
-Advanced Event Delegation
+<sub>en-GB<sub>
 
-[Prototype of api design](https://github.com/julienetie/yogafire/wiki/API-prototype)
+<img src="http://oi65.tinypic.com/oiuo06.jpg" width="300px">
+# yogaFire
+A Flexible Event Delegation Library
 
 ```php
-(Prototype, not for production)
+Working ALPHA, use at your own risk.
 ```
-yogaFire has no dependencies and can be used in any browser based project.
-yogaFire supports virtual-dom event delegation via yogaFire
+## Simple Event Delegation  
+yogaFire allows you to compose complex event delegation patterns in 
+an compact with all the necessary tools at your fingertips.
 
-
-yogaFire is an events library that provides the following:
-
-#### Event delgation detectin.
-- Event delegation by selector comparision
-- Event delegation by node comparision
-
-#### Event delegation patterns.
-- Global Event delegation
-- interface pattern
-
-#### Direct listeners.
-- Native addEventListener for virtual nodes
-- addMutationListener (via WeakMaps)
-
-## Events for Hypertext 
-yogaFire integrates with Hypertext's eventStore:
-
-```javascript
-
-import { eventStore } from 'hypertext';
-import { hyperActive } from 'yogafire';
-
-yogaFire.getEventStore(eventStore ...);
+#### No Delegation.
+```javascript 
+  // Grab 3 elements and display "Hello I am <element>"
+  var element1 = document.getElementsByClassName('element1').item(0);
+  var element2 = document.querySelector('.element2');
+  var element3 = document.getElementById('element1');
+  
+  element1.addEventListener('click',function(e){ console.log('Hello I am ' + e.target);},false);
+  element2.addEventListener('click',function(e){ console.log('Hello I am ' + e.target);},true);
+  element3.addEventListener('click',function(e){ console.log('Hello I am ' + e.target);},false);
 ```
-When delegating by node comparision, the eventStore should contain all created elements that require event management.
-At certain times when the UI is updated or a particular interface is being patched and an element is being created or removed, the eventStore will also reflect those changes (important to prevent memory leaks).
-**getEventStore should be called when an element is created/ removed for specific intefaces or the entire UI**
+or...
 
+#### Return fire with yogaFire Event Delegation.
+```javascript 
+    yoga(['.element1','.element2','#element3'],'click',(fire)=>{
+      return fire(({target})=>{
+        console.info('Hello I am ' + target);
+      });
+    });
+```
+- yogaFire has no dependencies and can be use in any browser based project.
+- Supports virtual DOM elements for Hypertext  _Hyperevents_.
+- Supports IE9+ (No legacy bloat).
+- Pollyfills and normalises events inconsistencies.
+- Multiple target elements.
+- Multiple yoga calls without overhead.
+- Extended parameters: event, target, parent, normalisation, interface and data.
+- Performance ideal for complex pages and weak mobile devices.
+- Ability to choose ancestors.
+- Event chaining.
 
-Node comparision can only be used for libraries that provide an eventStore in the fasion of Hypertext. 
+## Current supported events (More to be added)
+- MouseEvents
 
-The design of this API is in progress.
+MIT 2016 (c) Julien Etienne
