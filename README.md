@@ -1,5 +1,3 @@
-<sub>en-GB<sub>
-
 <img src="http://oi65.tinypic.com/oiuo06.jpg" width="300px">
 # yogaFire
 A Flexible Event Delegation Library
