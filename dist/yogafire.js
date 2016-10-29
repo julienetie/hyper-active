@@ -459,6 +459,23 @@ var eventHandler = {};
  * The handleEvent property for eventListeners.
  */
 eventHandler.handleEvent = function (e) {
+	var eventsTargetPair = eventTypesStore[e.type];
+	var eventsTargetPairLength = eventsTargetPair.length;
+	var currentCallBack = void 0;
+	var validTarget = void 0;
+
+	for (var i = 0; i < eventsTargetPairLength; i++) {
+
+		if (validTarget = matchTarget(eventsTargetPair[i], e.target)) {
+			currentCallBack = eventsTargetPair[i][1];
+			break;
+		}
+		// 	validTarget = doesEventStoreMatchTarget(eventsTargetPair[i][0], e.target);
+		// if(validTarget){
+		// 	currentCallBack = eventsTargetPair[i][1];
+		// }
+	}
+
 	var n = {};
 	/**
   * Normailsations for event properties.
@@ -472,8 +489,35 @@ eventHandler.handleEvent = function (e) {
 	/**
   * Parameters passed to the fire API callback.
   */
-	eventDelegator(e, this.callback, this.eventType, n);
+	if (e.target === validTarget) {
+		eventDelegator(e, currentCallBack, this.eventType, validTarget);
+	}
 };
+
+function matchTarget(stored, target) {
+	var storedLength = stored.length;
+	var matchedItem = void 0;
+	for (var i = 0; i < storedLength; i++) {
+		if (matchedItem = matchStored(stored[i], target)) {
+
+			return matchedItem;
+		}
+	}
+	return false;
+}
+
+function matchStored(element, target) {
+	var elementLength = element.length;
+
+	for (var i = 0; i < elementLength; i++) {
+
+		if (element[i] === target) {
+
+			return element[i];
+		}
+	}
+	return false;
+}
 
 /**
  * Maintains the eventTypeStore and element targets.
@@ -496,11 +540,11 @@ function updateEventTypeStore(eventType, watchElements, callback) {
    */
 		if (!eventTypesStore.hasOwnProperty(eventType[_i])) {
 
-			eventTypesStore[eventType[_i]] = watchElements;
+			eventTypesStore[eventType[_i]] = [[watchElements, callback]];
 
 			window.addEventListener(eventType[_i], this, true);
 		} else {
-			eventTypesStore[eventType[_i]] = eventTypesStore[eventType[_i]].concat(watchElements);
+			eventTypesStore[eventType[_i]] = eventTypesStore[eventType[_i]].concat([[watchElements, callback]]);
 		}
 	}
 }
@@ -511,9 +555,9 @@ function updateEventTypeStore(eventType, watchElements, callback) {
  * @param {Function} callback - The API callback.
  * @param {string} eventType - The type of event.
  */
-var eventDelegator = function eventDelegator(e, callback, eventType) {
+var eventDelegator = function eventDelegator(e, callback, eventType, validTarget) {
 	var target = e.target;
-	var watchElements = eventTypesStore[eventType];
+	var watchElements = eventTypesStore[eventType][0];
 	var watchElementsLength = watchElements.length;
 
 	/**
@@ -527,12 +571,7 @@ var eventDelegator = function eventDelegator(e, callback, eventType) {
   * Fires the returned callback of fire for
   * matching targets per eventType.
   */
-	for (var i = 0; i < watchElementsLength; i++) {
-		if (watchElements[i] === target) {
-			callback(fireArguments);
-			break;
-		}
-	}
+	callback(fireArguments);
 };
 
 /**

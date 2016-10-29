@@ -3,6 +3,7 @@ import { isElement } from '../libs/isElement';
 import { isString, isHTMLCollection } from './utilities/conditions';
 import { buttons, relatedTarget } from './normalisation';
 
+
 /**
  * Stores all event delegation event types and the target elements.
  */
@@ -25,6 +26,24 @@ const eventHandler = {};
  * The handleEvent property for eventListeners.
  */
 eventHandler.handleEvent = function(e) {
+	const eventsTargetPair = eventTypesStore[e.type];
+	const eventsTargetPairLength = eventsTargetPair.length;
+	let currentCallBack;
+	let validTarget;
+
+	for (let i = 0; i < eventsTargetPairLength; i++) {
+
+
+		if (validTarget = matchTarget(eventsTargetPair[i], e.target)) {
+			currentCallBack = eventsTargetPair[i][1];
+			break;
+		}
+		// 	validTarget = doesEventStoreMatchTarget(eventsTargetPair[i][0], e.target);
+		// if(validTarget){
+		// 	currentCallBack = eventsTargetPair[i][1];
+		// }
+	}
+
 	const n = {};
 	/**
 	 * Normailsations for event properties.
@@ -39,22 +58,36 @@ eventHandler.handleEvent = function(e) {
 	/**
 	 * Parameters passed to the fire API callback.
 	 */
-	eventDelegator(e, this.callback, this.eventType, n)
+	if (e.target === validTarget) {
+		eventDelegator(e, currentCallBack, this.eventType, validTarget);
+	}
+
 }
 
 
-/**
- * Adds an event listener for each event to the window object.
- * @param {string} eventType - Type of event.
- * @param {Number} i - eventType index.
- * @param {Function} callback - The API callback. 
- */
-function addGlobalEvent(eventType, i, callback){
-	var add = function(e){
-		console.log(e,callback,eventType[i]);
-		eventDelegator(e, callback, eventType[i])
+function matchTarget(stored, target, ) {
+	const storedLength = stored.length;
+	let matchedItem;
+	for (let i = 0; i < storedLength; i++) {
+		if (matchedItem = matchStored(stored[i], target)) {
+
+			return matchedItem;
+		}
 	}
-	window.addEventListener(eventType[i], add, true);
+	return false;
+}
+
+function matchStored(element, target) {
+	const elementLength = element.length;
+
+	for (let i = 0; i < elementLength; i++) {
+
+		if (element[i] === target) {
+
+			return element[i];
+		}
+	}
+	return false;
 }
 
 
@@ -64,13 +97,13 @@ function addGlobalEvent(eventType, i, callback){
  * @param {Array} watchElements - Elements to watch.
  * @param {Function} callback - The API callback. 
  */
-function updateEventTypeStore (eventType, watchElements, callback){
+function updateEventTypeStore(eventType, watchElements, callback) {
 	const newEventLength = eventType.length;
 	let listenerToRemove;
 	let i = 0;
 
 	this.callback = callback;
-	
+
 	for (let i = 0; i < newEventLength; i++) {
 		this.eventType = eventType[i];
 
@@ -79,11 +112,15 @@ function updateEventTypeStore (eventType, watchElements, callback){
 		 */
 		if (!eventTypesStore.hasOwnProperty(eventType[i])) {
 
-			eventTypesStore[eventType[i]] = watchElements;
+			eventTypesStore[eventType[i]] = [
+				[watchElements, callback]
+			];
 
 			window.addEventListener(eventType[i], this, true);
-		}else{
-			eventTypesStore[eventType[i]] = eventTypesStore[eventType[i]].concat(watchElements);
+		} else {
+			eventTypesStore[eventType[i]] = eventTypesStore[eventType[i]].concat([
+				[watchElements, callback]
+			]);
 		}
 	}
 }
@@ -95,11 +132,10 @@ function updateEventTypeStore (eventType, watchElements, callback){
  * @param {Function} callback - The API callback.
  * @param {string} eventType - The type of event.
  */
-const eventDelegator = (e, callback, eventType) => {
+const eventDelegator = (e, callback, eventType, validTarget) => {
 	const target = e.target;
-	const watchElements = eventTypesStore[eventType];
+	const watchElements = eventTypesStore[eventType][0];
 	const watchElementsLength = watchElements.length;
-
 
 	/**
 	 * Assign the arguments to be passed to fire.
@@ -113,12 +149,7 @@ const eventDelegator = (e, callback, eventType) => {
 	 * Fires the returned callback of fire for
 	 * matching targets per eventType.
 	 */
-	for (let i = 0; i < watchElementsLength; i++) {
-		if (watchElements[i] === target) {
-			callback(fireArguments)
-			break;
-		}
-	}
+	callback(fireArguments);
 }
 
 
@@ -232,8 +263,8 @@ function yoga(targets, eventDescription, yogaCallback, interfaces) {
 
 		/**
 		 * Updates eventTypes and the associated callback.
-		 */ 
-		updateEventTypeStore.call(eventHandler,events, elements, newCallback);
+		 */
+		updateEventTypeStore.call(eventHandler, events, elements, newCallback);
 
 	}
 }

@@ -42,8 +42,14 @@
 </head>
 <body>
 
+
+
+
 <div class='target1'>
 	TEST
+	<div>
+		<button>SOME 3rd party widget</button>
+	</div>
 </div>
 
 <div class='target2'>
@@ -56,22 +62,29 @@
 
 	<script src="../dist/yogafire.js"></script>
 	<script>
-		// yoga(['.target1','.target2'],'click:mouseover:mouseout:mousedown:dblclick',(fire)=>{
-  // 			return fire(({e, target, data, interface})=>{
-  // 				console.info(e)
-  // 			});
-		// },['someInterface']);
+const button = document.getElementsByTagName('button').item(0);
 
-		// yoga(['#target3'],'click:mouseover:mouseout:mousedown:dblclick',(fire)=>{
-  // 			return fire(({e, target, data, interface})=>{
-  // 				console.info(e)
-  // 			});
-		// },['someInterface']);
-	yoga(['.target1','.target2'],'click:mouseover:mouseout:mousedown:dblclick',function (fire) {
-			return fire(function(details){
-				console.info(details.e, details.target, details.data, details.interface)
-			});
-	},['someInterface']);
+button.addEventListener('click',function(){
+	console.warn('WIDGET');
+},true)
+
+
+		yoga(['.target1','.target2'],'click:dblclick',(fire)=>{
+  			return fire(({e, target, data, interface})=>{
+  				console.info(target.className);
+  			});
+		},['someInterface']);
+
+		yoga(['#target3'],'click:dblclick',(fire)=>{
+  			return fire(({e, target, data, interface})=>{
+  				  				console.info('target ' + target.id);
+  			});
+		},['someInterface']);
+	// yoga(['.target1','.target2'],'click:mouseover:mouseout:mousedown:dblclick',function (fire) {
+	// 		return fire(function(details){
+	// 			console.info(details.e, details.target, details.data, details.interface)
+	// 		});
+	// },['someInterface']);
 
 	</script>
 </body>
