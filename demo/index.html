@@ -56,17 +56,23 @@
 
 	<script src="../dist/yogafire.js"></script>
 	<script>
-		yoga(['.target1','.target2'],'click:mouseover:mouseout:mousedown:dblclick',(fire)=>{
-  			return fire(({e, target, data, interface})=>{
-  				console.info('Hello world', e.type)
-  			});
-		},['someInterface']);
+		// yoga(['.target1','.target2'],'click:mouseover:mouseout:mousedown:dblclick',(fire)=>{
+  // 			return fire(({e, target, data, interface})=>{
+  // 				console.info(e)
+  // 			});
+		// },['someInterface']);
 
-		yoga(['#target3'],'click:mouseover:mouseout:mousedown:dblclick',(fire)=>{
-  			return fire(({e, target, data, interface})=>{
-  				console.info('Hello world', e.type)
-  			});
-		},['someInterface']);
+		// yoga(['#target3'],'click:mouseover:mouseout:mousedown:dblclick',(fire)=>{
+  // 			return fire(({e, target, data, interface})=>{
+  // 				console.info(e)
+  // 			});
+		// },['someInterface']);
+	yoga(['.target1','.target2'],'click:mouseover:mouseout:mousedown:dblclick',function (fire) {
+			return fire(function(details){
+				console.info(details.e, details.target, details.data, details.interface)
+			});
+	},['someInterface']);
+
 	</script>
 </body>
 </html>

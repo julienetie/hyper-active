@@ -372,6 +372,74 @@ var isString = function isString(value) {
 	return typeof value === 'string';
 };
 
+// /**
+//  * Browser Support:
+//  * 
+//  * Safari: 		6+
+//  * Chrome:
+//  * Opera:       18+
+//  * IE: 			9+
+//  * Firefox:     
+//  * Edge:      
+//  * 
+//  * IOS: 		6+
+//  * Android M:   4+
+//  * Chrome M:     
+//  * Earlier versions may work but will not be supported in development.
+//  */
+
+
+// export {
+// 	/*
+// 		MouseEvent.buttons
+// 		¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯	
+// 	*/
+// 	buttons(event) {
+// 		if ('buttons' in event) {
+// 			return event.buttons;
+// 		} else if ('which' in event) {
+// 			let value = event.which;
+// 			if (value === 2) {
+// 				return 4;
+// 			} else if (value === 3) {
+// 				return 2;
+// 			} else if (value > 0) {
+// 				return 1 << (value - 1);
+// 			}
+// 		}
+
+// 	},
+// 	/*	
+// 		MouseEvent.relatedTarget
+// 		¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+// 	*/
+// 	relatedTarget(event) {
+// 		return event.relatedTarget || (
+// 			event.fromElement === event.target ?
+// 			event.toElement : event.fromElement);
+// 	}
+
+// }
+
+function buttons(event) {
+	if ('buttons' in event) {
+		return event.buttons;
+	} else if ('which' in event) {
+		var value = event.which;
+		if (value === 2) {
+			return 4;
+		} else if (value === 3) {
+			return 2;
+		} else if (value > 0) {
+			return 1 << value - 1;
+		}
+	}
+}
+
+function relatedTarget(event) {
+	return event.relatedTarget || (event.fromElement === event.target ? event.toElement : event.fromElement);
+}
+
 /**
  * Stores all event delegation event types and the target elements.
  */
@@ -391,7 +459,20 @@ var eventHandler = {};
  * The handleEvent property for eventListeners.
  */
 eventHandler.handleEvent = function (e) {
-	eventDelegator(e, this.callback, this.eventType);
+	var n = {};
+	/**
+  * Normailsations for event properties.
+  * An additional variable is used with properties that
+  * mend inconsistencies as it is cheaper than cloning
+  * the event object.
+  */
+	n.buttons = buttons(e);
+	n.relatedTarget = relatedTarget(e);
+
+	/**
+  * Parameters passed to the fire API callback.
+  */
+	eventDelegator(e, this.callback, this.eventType, n);
 };
 
 /**

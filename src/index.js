@@ -1,7 +1,7 @@
 import isArray from '../libs/isArray';
 import { isElement } from '../libs/isElement';
 import { isString, isHTMLCollection } from './utilities/conditions';
-
+import { buttons, relatedTarget } from './normalisation';
 
 /**
  * Stores all event delegation event types and the target elements.
@@ -25,7 +25,21 @@ const eventHandler = {};
  * The handleEvent property for eventListeners.
  */
 eventHandler.handleEvent = function(e) {
-	eventDelegator(e, this.callback, this.eventType)
+	const n = {};
+	/**
+	 * Normailsations for event properties.
+	 * An additional variable is used with properties that
+	 * mend inconsistencies as it is cheaper than cloning
+	 * the event object.
+	 */
+	n.buttons = buttons(e);
+	n.relatedTarget = relatedTarget(e);
+
+
+	/**
+	 * Parameters passed to the fire API callback.
+	 */
+	eventDelegator(e, this.callback, this.eventType, n)
 }
 
 
