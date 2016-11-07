@@ -215,6 +215,7 @@ var set = function set(object, property, value, receiver) {
  */
 
 /** Used as the semantic version number. */
+/** Detect free variable `global` from Node.js. */
 var freeGlobal = (typeof global === 'undefined' ? 'undefined' : _typeof(global)) == 'object' && global && global.Object === Object && global;
 
 /** Detect free variable `self`. */
@@ -223,12 +224,35 @@ var freeSelf = (typeof self === 'undefined' ? 'undefined' : _typeof(self)) == 'o
 /** Used as a reference to the global object. */
 var root = freeGlobal || freeSelf || Function('return this')();
 
-/** Detect free variable `exports`. */
-var isArray = Array.isArray;
+// No operation performed.
+
 
 /*------------------------------------------------------------------------*/
 
-// Add methods that return unwrapped values in chain sequences.
+/**
+ * Checks if `value` is classified as an `Array` object.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is an array, else `false`.
+ * @example
+ *
+ * _.isArray([1, 2, 3]);
+ * // => true
+ *
+ * _.isArray(document.body.children);
+ * // => false
+ *
+ * _.isArray('abc');
+ * // => false
+ *
+ * _.isArray(_.noop);
+ * // => false
+ */
+var isArray = Array.isArray;
 
 /**
  * @license
@@ -241,6 +265,7 @@ var isArray = Array.isArray;
  */
 
 /** Used as the semantic version number. */
+/** `Object#toString` result references. */
 var objectTag = '[object Object]';
 
 /** Detect free variable `global` from Node.js. */
@@ -252,7 +277,16 @@ var freeSelf$1 = (typeof self === 'undefined' ? 'undefined' : _typeof(self)) == 
 /** Used as a reference to the global object. */
 var root$1 = freeGlobal$1 || freeSelf$1 || Function('return this')();
 
-/** Detect free variable `exports`. */
+/*--------------------------------------------------------------------------*/
+
+/**
+ * Creates a unary function that invokes `func` with its argument transformed.
+ *
+ * @private
+ * @param {Function} func The function to wrap.
+ * @param {Function} transform The argument transform.
+ * @returns {Function} Returns the new function.
+ */
 function overArg(func, transform) {
   return function (arg) {
     return func(transform(arg));
@@ -284,7 +318,28 @@ var objectToString = objectProto.toString;
 /** Built-in value references. */
 var getPrototype = overArg(Object.getPrototypeOf, Object);
 
-/** Used to lookup unminified function names. */
+// No operation performed.
+
+
+/*------------------------------------------------------------------------*/
+
+/**
+ * Checks if `value` is likely a DOM element.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is a DOM element, else `false`.
+ * @example
+ *
+ * _.isElement(document.body);
+ * // => true
+ *
+ * _.isElement('<body>');
+ * // => false
+ */
 function isElement(value) {
   return value != null && value.nodeType === 1 && isObjectLike(value) && !isPlainObject(value);
 }
@@ -356,10 +411,6 @@ function isPlainObject(value) {
   var Ctor = hasOwnProperty.call(proto, 'constructor') && proto.constructor;
   return typeof Ctor == 'function' && Ctor instanceof Ctor && funcToString.call(Ctor) == objectCtorString;
 }
-
-/*------------------------------------------------------------------------*/
-
-// Add methods that return unwrapped values in chain sequences.
 
 var isHTMLCollection = function isHTMLCollection(value) {
 	if (typeof value.item === 'function') {
