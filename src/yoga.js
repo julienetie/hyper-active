@@ -1,3 +1,19 @@
+import { isString } from './utilities/conditions';
+import isArray from '../libs/isArray';
+import fireArguments from './fire-arguments';
+import updateEventTypeStore from './update-event-type-store';
+import getTargetsAsElements from './get-targets-as-elements';
+import eventHandler from './event-handler';
+
+
+/**
+ * The API used in conjunction with yoga.
+ * @return - Callback.
+ */
+function fire(callback) {
+	return callback;
+}
+
 /**
  * Handles targets and event types.
  * @param {Array|Element|HTMLCollection} targets - Elements to listen to.

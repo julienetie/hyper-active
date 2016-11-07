@@ -4,7 +4,9 @@
   "description": "Advanced Event Delegation",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --compilers js:babel-register --recursive"
+    "test": "mocha --compilers js:babel-register --recursive",
+    "build": "rollup -c",
+    "watch": "rollup -c -w"
   },
   "repository": {
     "type": "git",
