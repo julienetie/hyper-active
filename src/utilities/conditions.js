@@ -9,4 +9,13 @@ const isString = (value) => {
 	return typeof value === 'string';
 }
 
-export { isHTMLCollection, isString };
+const isFunction = (value) => {
+	return typeof value === 'function';
+}
+
+
+export { 
+	isHTMLCollection,
+	isFunction,
+	isString 
+}

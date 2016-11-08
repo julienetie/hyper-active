@@ -1,4 +1,4 @@
-import { isString } from './utilities/conditions';
+import { isString, isFunction } from './utilities/conditions';
 import isArray from '../libs/isArray';
 import fireArguments from './fire-arguments';
 import updateEventTypeStore from './update-event-type-store';
@@ -14,6 +14,7 @@ function fire(callback) {
 	return callback;
 }
 
+
 /**
  * Handles targets and event types.
  * @param {Array|Element|HTMLCollection} targets - Elements to listen to.
@@ -23,7 +24,7 @@ function fire(callback) {
  */
 function yoga(targets, eventDescription, yogaCallback, interfaces) {
 	const elements = getTargetsAsElements(targets);
-	let events;
+	let eventTypes;
 
 
 	// Check if eventDescription is a yogaCallback or string.
@@ -31,7 +32,7 @@ function yoga(targets, eventDescription, yogaCallback, interfaces) {
 		/**
 		 * If using the YogaFire API.
 		 */
-		events = eventDescription.split(':');
+		eventTypes = eventDescription.split(':');
 	} else {
 		/**
 		 * If using the addEventListener API for HyperEvents.
@@ -45,7 +46,7 @@ function yoga(targets, eventDescription, yogaCallback, interfaces) {
 	/**
 	 * YogaFire API. Ensuring yogaCallback is used.
 	 */
-	if (typeof yogaCallback === 'function') {
+	if (isFunction(yogaCallback)) {
 		if (interfaces && isArray(interfaces)) {
 			/**
 			 * If interfaces supplied.
@@ -57,16 +58,22 @@ function yoga(targets, eventDescription, yogaCallback, interfaces) {
 		 * Sets the data from the previous interface in 
 		 * the rolling stone chain. 
 		 */
-		fireArguments.data = 'this is data';
+		// @TODO: setup data and example.
+		// fireArguments.data = 'this is data';
 
 
 		// Passes fire to the yogaCallback.
-		const newCallback = yogaCallback.call(this, fire);
+		const fireAPIArgument = yogaCallback.call(this, fire);
 
 		/**
 		 * Updates eventTypes and the associated callback.
 		 */
-		updateEventTypeStore.call(eventHandler, events, elements, newCallback);
+		updateEventTypeStore.call(
+			eventHandler,
+			eventTypes,
+			elements,
+			fireAPIArgument
+		);
 
 	}
 }
