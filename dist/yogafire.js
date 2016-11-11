@@ -215,7 +215,6 @@ var set = function set(object, property, value, receiver) {
  */
 
 /** Used as the semantic version number. */
-/** Detect free variable `global` from Node.js. */
 var freeGlobal = (typeof global === 'undefined' ? 'undefined' : _typeof(global)) == 'object' && global && global.Object === Object && global;
 
 /** Detect free variable `self`. */
@@ -224,35 +223,12 @@ var freeSelf = (typeof self === 'undefined' ? 'undefined' : _typeof(self)) == 'o
 /** Used as a reference to the global object. */
 var root = freeGlobal || freeSelf || Function('return this')();
 
-// No operation performed.
-
+/** Detect free variable `exports`. */
+var isArray = Array.isArray;
 
 /*------------------------------------------------------------------------*/
 
-/**
- * Checks if `value` is classified as an `Array` object.
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is an array, else `false`.
- * @example
- *
- * _.isArray([1, 2, 3]);
- * // => true
- *
- * _.isArray(document.body.children);
- * // => false
- *
- * _.isArray('abc');
- * // => false
- *
- * _.isArray(_.noop);
- * // => false
- */
-var isArray = Array.isArray;
+// Add methods that return unwrapped values in chain sequences.
 
 /**
  * @license
@@ -265,7 +241,6 @@ var isArray = Array.isArray;
  */
 
 /** Used as the semantic version number. */
-/** `Object#toString` result references. */
 var objectTag = '[object Object]';
 
 /** Detect free variable `global` from Node.js. */
@@ -277,16 +252,7 @@ var freeSelf$1 = (typeof self === 'undefined' ? 'undefined' : _typeof(self)) == 
 /** Used as a reference to the global object. */
 var root$1 = freeGlobal$1 || freeSelf$1 || Function('return this')();
 
-/*--------------------------------------------------------------------------*/
-
-/**
- * Creates a unary function that invokes `func` with its argument transformed.
- *
- * @private
- * @param {Function} func The function to wrap.
- * @param {Function} transform The argument transform.
- * @returns {Function} Returns the new function.
- */
+/** Detect free variable `exports`. */
 function overArg(func, transform) {
   return function (arg) {
     return func(transform(arg));
@@ -318,28 +284,7 @@ var objectToString = objectProto.toString;
 /** Built-in value references. */
 var getPrototype = overArg(Object.getPrototypeOf, Object);
 
-// No operation performed.
-
-
-/*------------------------------------------------------------------------*/
-
-/**
- * Checks if `value` is likely a DOM element.
- *
- * @static
- * @memberOf _
- * @since 0.1.0
- * @category Lang
- * @param {*} value The value to check.
- * @returns {boolean} Returns `true` if `value` is a DOM element, else `false`.
- * @example
- *
- * _.isElement(document.body);
- * // => true
- *
- * _.isElement('<body>');
- * // => false
- */
+/** Used to lookup unminified function names. */
 function isElement(value) {
   return value != null && value.nodeType === 1 && isObjectLike(value) && !isPlainObject(value);
 }
@@ -412,6 +357,10 @@ function isPlainObject(value) {
   return typeof Ctor == 'function' && Ctor instanceof Ctor && funcToString.call(Ctor) == objectCtorString;
 }
 
+/*------------------------------------------------------------------------*/
+
+// Add methods that return unwrapped values in chain sequences.
+
 var isHTMLCollection = function isHTMLCollection(value) {
 	if (typeof value.item === 'function') {
 		return value.item(0) === value[0];
@@ -421,6 +370,10 @@ var isHTMLCollection = function isHTMLCollection(value) {
 
 var isString = function isString(value) {
 	return typeof value === 'string';
+};
+
+var isFunction = function isFunction(value) {
+	return typeof value === 'function';
 };
 
 // /**
@@ -501,12 +454,6 @@ var fireArguments = {};
  */
 var eventTypesStore = {};
 
-/**
- * Maintains the eventTypeStore and element targets.
- * @param {string} eventType - Type of event.
- * @param {Array} watchElements - Elements to watch.
- * @param {Function} callback - The API callback. 
- */
 function updateEventTypeStore(eventType, watchElements, callback) {
 	var newEventLength = eventType.length;
 	var listenerToRemove = void 0;
@@ -531,11 +478,6 @@ function updateEventTypeStore(eventType, watchElements, callback) {
 	}
 }
 
-/**
- * The elements to be compared as event targets.
- * @param {string|HTMLElement|Array|HTMLCollection} value - target or targets.  
- * @return {Array} - Array of HTMLElements.
- */
 var getTargetsAsElements = function getTargetsAsElements(value) {
 	var elements = void 0;
 
@@ -604,15 +546,26 @@ function fire(callback) {
  * @param {Array} interfaces - UI panels.
  */
 function yoga(targets, eventDescription, yogaCallback, interfaces) {
+	if (!targets) {
+		throw new Error('YogaFire: No targets were defined');
+	}
+	if (!eventDescription) {
+		throw new Error('YogaFire: No eventTypes were defined');
+	}
+
+	if (interfaces && !isArray(interfaces)) {
+		throw new Error('YogaFire: interfaces is not an Array');
+	}
+
 	var elements = getTargetsAsElements(targets);
-	var events = void 0;
+	var eventTypes = void 0;
 
 	// Check if eventDescription is a yogaCallback or string.
 	if (isString(eventDescription)) {
 		/**
    * If using the YogaFire API.
    */
-		events = eventDescription.split(':');
+		eventTypes = eventDescription.split(':');
 	} else {
 		/**
    * If using the addEventListener API for HyperEvents.
@@ -625,7 +578,7 @@ function yoga(targets, eventDescription, yogaCallback, interfaces) {
 	/**
   * YogaFire API. Ensuring yogaCallback is used.
   */
-	if (typeof yogaCallback === 'function') {
+	if (isFunction(yogaCallback)) {
 		if (interfaces && isArray(interfaces)) {
 			/**
     * If interfaces supplied.
@@ -637,27 +590,22 @@ function yoga(targets, eventDescription, yogaCallback, interfaces) {
    * Sets the data from the previous interface in 
    * the rolling stone chain. 
    */
-		fireArguments.data = 'this is data';
+		// @TODO: setup data and example.
+		// fireArguments.data = 'this is data';
+
 
 		// Passes fire to the yogaCallback.
-		var newCallback = yogaCallback.call(this, fire);
+		var fireAPIArgument = yogaCallback.call(this, fire);
 
 		/**
    * Updates eventTypes and the associated callback.
    */
-		updateEventTypeStore.call(eventHandler, events, elements, newCallback);
+		updateEventTypeStore.call(eventHandler, eventTypes, elements, fireAPIArgument);
+	} else {
+		throw new Error('YogaFire: No callback was provided');
 	}
 }
 
-// *
-//  * The arguments to be passed to the fire API callback.
-
-// let fireArguments = {};
-
-
-/**
- * The handleEvent property for eventListeners.
- */
 eventHandler.handleEvent = function (e) {
 	var eventsTargetPair = eventTypesStore[e.type];
 	var eventsTargetPairLength = eventsTargetPair.length;

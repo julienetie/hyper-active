@@ -69,17 +69,21 @@ button.addEventListener('click',function(){
 },true)
 
 
-		yoga(['.target1','.target2'],'click:dblclick',(fire)=>{
-  			return fire(({e, target, data, interface})=>{
-  				console.info(target.className);
-  			});
-		},['someInterface']);
+		// yoga(['.target1','.target2'],'click:dblclick',(fire)=>{
+  // 			return fire(({e, target, data, interface})=>{
+  // 				console.info(target.className);
+  // 			});
+		// },['someInterface']);
 
-		yoga(['#target3'],'click:dblclick',(fire)=>{
-  			return fire(({e, target, data, interface})=>{
-  				  				console.info('target ' + target.id);
-  			});
-		},['someInterface']);
+		// yoga(['#target3'],'click:dblclick',(fire)=>{
+  // 			return fire(({e, target, data, interface})=>{
+  // 				  				console.info('target ' + target.id);
+  // 			});
+		// },['someInterface']);
+
+yoga(['#target3'],'click:dblclick',(fire)=>{
+		console.log(fire)
+});
 	// yoga(['.target1','.target2'],'click:mouseover:mouseout:mousedown:dblclick',function (fire) {
 	// 		return fire(function(details){
 	// 			console.info(details.e, details.target, details.data, details.interface)

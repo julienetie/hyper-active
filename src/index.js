@@ -2,7 +2,7 @@ import isArray from '../libs/isArray';
 import { isElement } from '../libs/isElement';
 import { isString, isHTMLCollection } from './utilities/conditions';
 import { buttons, relatedTarget } from './normalisation';
-import yoga from './yoga-fire';
+import { yoga } from './yoga-fire';
 import eventHandler from './event-handler';
 import fireArguments from './fire-arguments';
 import eventTypesStore from './event-type-store';

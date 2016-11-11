@@ -23,9 +23,19 @@ function fire(callback) {
  * @param {Array} interfaces - UI panels.
  */
 function yoga(targets, eventDescription, yogaCallback, interfaces) {
+	if(!targets){
+		throw new Error('YogaFire: No targets were defined');
+	}
+	if(!eventDescription){
+		throw new Error('YogaFire: No eventTypes were defined');
+	}
+
+	if(interfaces && !isArray(interfaces)){
+		throw new Error('YogaFire: interfaces is not an Array');
+	}
+
 	const elements = getTargetsAsElements(targets);
 	let eventTypes;
-
 
 	// Check if eventDescription is a yogaCallback or string.
 	if (isString(eventDescription)) {
@@ -74,8 +84,9 @@ function yoga(targets, eventDescription, yogaCallback, interfaces) {
 			elements,
 			fireAPIArgument
 		);
-
+	}else{
+		throw new Error('YogaFire: No callback was provided');
 	}
 }
 
-export default yoga;
+export { yoga, fire };
