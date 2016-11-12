@@ -5,17 +5,15 @@ const isHTMLCollection = (value) => {
 	return false;
 }
 
-const isString = (value) => {
-	return typeof value === 'string';
-}
+const isString = (value) => typeof value === 'string';
 
-const isFunction = (value) => {
-	return typeof value === 'function';
-}
+const isFunction = (value) => typeof value === 'function';
 
+const hasDuplicates = (array) => (new Set(array)).size !== array.length;
 
 export { 
 	isHTMLCollection,
 	isFunction,
-	isString 
+	isString,
+	hasDuplicates 
 }

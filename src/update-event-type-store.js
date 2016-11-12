@@ -7,17 +7,15 @@ import eventTypesStore from './event-type-store';
  * @param {Function} callback - The API callback. 
  */
 function updateEventTypeStore(eventType, watchElements, callback) {
-	const newEventLength = eventType.length;
-	let listenerToRemove;
-	let i = 0;
+	const eventTypeLength = eventType.length;
 
 	this.callback = callback;
 
-	for (let i = 0; i < newEventLength; i++) {
+	for (let i = 0; i < eventTypeLength; i++) {
 		this.eventType = eventType[i];
 
 		/**
-		 * only create new eventType entries if not yet properties.
+		 * Only creates new eventType entries if not yet properties.
 		 */
 		if (!eventTypesStore.hasOwnProperty(eventType[i])) {
 

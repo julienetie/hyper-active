@@ -4,6 +4,21 @@
   (factory((global.yogafire = global.yogafire || {})));
 }(this, (function (exports) { 'use strict';
 
+var isHTMLCollection = function isHTMLCollection(value) {
+	if (typeof value.item === 'function') {
+		return value.item(0) === value[0];
+	}
+	return false;
+};
+
+var isString = function isString(value) {
+	return typeof value === 'string';
+};
+
+var isFunction = function isFunction(value) {
+	return typeof value === 'function';
+};
+
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
   return typeof obj;
 } : function (obj) {
@@ -231,6 +246,38 @@ var isArray = Array.isArray;
 // Add methods that return unwrapped values in chain sequences.
 
 /**
+ * The arguments to be passed to the fire API callback.
+ */
+var fireArguments = {};
+
+/**
+ * Stores all event delegation event types and the target elements.
+ */
+var eventTypesStore = {};
+
+function updateEventTypeStore(eventType, watchElements, callback) {
+	var eventTypeLength = eventType.length;
+
+	this.callback = callback;
+
+	for (var i = 0; i < eventTypeLength; i++) {
+		this.eventType = eventType[i];
+
+		/**
+   * Only creates new eventType entries if not yet properties.
+   */
+		if (!eventTypesStore.hasOwnProperty(eventType[i])) {
+
+			eventTypesStore[eventType[i]] = [[watchElements, callback]];
+
+			window.addEventListener(eventType[i], this, true);
+		} else {
+			eventTypesStore[eventType[i]] = eventTypesStore[eventType[i]].concat([[watchElements, callback]]);
+		}
+	}
+}
+
+/**
  * @license
  * lodash (Custom Build) <https://lodash.com/>
  * Build: `lodash include="isElement" -o isElement.js`
@@ -361,55 +408,6 @@ function isPlainObject(value) {
 
 // Add methods that return unwrapped values in chain sequences.
 
-var isHTMLCollection = function isHTMLCollection(value) {
-	if (typeof value.item === 'function') {
-		return value.item(0) === value[0];
-	}
-	return false;
-};
-
-var isString = function isString(value) {
-	return typeof value === 'string';
-};
-
-var isFunction = function isFunction(value) {
-	return typeof value === 'function';
-};
-
-/**
- * The arguments to be passed to the fire API callback.
- */
-var fireArguments = {};
-
-/**
- * Stores all event delegation event types and the target elements.
- */
-var eventTypesStore = {};
-
-function updateEventTypeStore(eventType, watchElements, callback) {
-	var newEventLength = eventType.length;
-	var listenerToRemove = void 0;
-	var i = 0;
-
-	this.callback = callback;
-
-	for (var _i = 0; _i < newEventLength; _i++) {
-		this.eventType = eventType[_i];
-
-		/**
-   * only create new eventType entries if not yet properties.
-   */
-		if (!eventTypesStore.hasOwnProperty(eventType[_i])) {
-
-			eventTypesStore[eventType[_i]] = [[watchElements, callback]];
-
-			window.addEventListener(eventType[_i], this, true);
-		} else {
-			eventTypesStore[eventType[_i]] = eventTypesStore[eventType[_i]].concat([[watchElements, callback]]);
-		}
-	}
-}
-
 var getTargetsAsElements = function getTargetsAsElements(value) {
 	var elements = void 0;
 
@@ -457,8 +455,15 @@ var getTargetsAsElements = function getTargetsAsElements(value) {
 	return elements;
 };
 
-var eventDelegator = function eventDelegator(e, callback, eventType, validTarget) {
-	var target = e.target;
+function relate() {
+	console.info('relate function', this);
+}
+
+function destruct() {
+	console.info('destruct function', this);
+}
+
+var eventDelegator = function eventDelegator(callback, eventType, e, n, target, targets) {
 	var watchElements = eventTypesStore[eventType][0];
 	var watchElementsLength = watchElements.length;
 
@@ -467,7 +472,12 @@ var eventDelegator = function eventDelegator(e, callback, eventType, validTarget
   */
 	fireArguments.e = e;
 	fireArguments.target = target;
-	fireArguments.parent = target.parent;
+	fireArguments.targets = targets;
+	fireArguments.relate = relate;
+	fireArguments.n = n;
+	fireArguments.interface = null;
+	fireArguments.destruct = destruct;
+	fireArguments.id = null;
 
 	/**
   * Fires the returned callback of fire for
@@ -550,33 +560,44 @@ var eventHandler = {};
  * The handleEvent property for eventListeners.
  */
 eventHandler.handleEvent = function (e) {
+	var target = e.target;
 	var eventsTargetPair = eventTypesStore[e.type];
 	var eventsTargetPairLength = eventsTargetPair.length;
 	var currentCallBack = void 0;
 	var validTarget = void 0;
 
 	for (var i = 0; i < eventsTargetPairLength; i++) {
-		if (validTarget = matchTarget(eventsTargetPair[i], e.target)) {
+		if (validTarget = matchTarget(eventsTargetPair[i], target)) {
 			currentCallBack = eventsTargetPair[i][1];
 			break;
 		}
 	}
 
 	var n = {};
+
 	/**
   * Normailsations for event properties.
   * An additional variable is used with properties that
   * mend inconsistencies as it is cheaper than cloning
   * the event object.
   */
-	n.buttons = buttons(e);
-	n.relatedTarget = relatedTarget(e);
+
+	/** 
+  * Mouse events.
+  */console.log('e.type', e.type);
+	if (e.type.indexOf('mouse') >= 0) {
+		console.log('YES');
+		n.buttons = buttons(e);
+		n.relatedTarget = relatedTarget(e);
+	}
+
+	var targets = eventsTargetPair[0][0];
 
 	/**
   * Parameters passed to the fire API callback.
   */
-	if (e.target === validTarget) {
-		eventDelegator(e, currentCallBack, this.eventType, validTarget);
+	if (target === validTarget) {
+		eventDelegator(currentCallBack, this.eventType, e, n, target, targets);
 	}
 };
 
@@ -625,11 +646,12 @@ var logError = function logError(_ref) {
 	throw error;
 };
 
-var messages = {
+var errorMessages = {
 	targets: 'targets is not valid',
 	eventTypes: 'eventTypes is not valid',
 	yogaCallback: 'yogaCallback is not valid',
-	interfaces: 'interfaces is not valid'
+	interfaces: 'interfaces is not valid',
+	duplicateEventTypes: 'Duplicate eventTypes are not allowed'
 };
 
 function fire(callback) {
@@ -651,19 +673,19 @@ function yoga(targets, eventTypes, yogaCallback, interfaces) {
 		elements = getTargetsAsElements(targets);
 	} else {
 		logError({
-			message: messages.targets
+			message: errorMessages.targets
 		});
 	}
 
 	if (!eventTypes) {
 		logError({
-			message: messages.eventTypes
+			message: errorMessages.eventTypes
 		});
 	}
 
 	if (interfaces && !isArray(interfaces)) {
 		logError({
-			message: messages.interfaces
+			message: errorMessages.interfaces
 		});
 	}
 
@@ -710,12 +732,11 @@ function yoga(targets, eventTypes, yogaCallback, interfaces) {
 		updateEventTypeStore.call(eventHandler, eventDescriptions, elements, fireAPIArgument);
 	} else {
 		logError({
-			message: messages.yogaCallback
+			message: errorMessages.yogaCallback
 		});
 	}
 }
 
-// @TODO remove.
 window.yoga = yoga;
 
 exports.yoga = yoga;

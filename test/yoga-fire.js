@@ -28,6 +28,11 @@ describe('Yoga - eventTypes', () => {
 		expect(() => yoga(element, 'click:dblclick', () => {}))
 			.to.not.throw(messages.eventTypes);
 	});
+
+	it('Should throw an error for duplicate eventTypes', () => {
+		expect(() => yoga(element, 'mouseover:mouseover', () => {}))
+			.to.throw(messages.duplicateEventTypes);
+	});
 });
 
 
@@ -59,15 +64,9 @@ describe('Yoga - interfaces', () => {
 
 describe('Yoga - arguments', () => {
 	it('Should provide Fire as an argument', () => {
-		// let hasFireCallback;
-
 		yoga(element, 'click:mouseover', (expectedFire) => {
-			// hasFireCallback = expectedFire === fire;
-			
 			expect(expectedFire).to.equal(fire);
 		})
-
-		// expect(hasFireCallback).to.be.true;
 	});
 });
 
@@ -78,16 +77,3 @@ describe('Fire', () => {
 		expect(fire(value)).to.equal(value);
 	});
 });
-
-
-// describe('Fire - arguments', () => {
-// 	it('Should provide a target', () => {
-// 		let hasFireCallback;
-
-// 		yoga(element, 'click:mouseover', (expectedFire) => {
-// 			hasFireCallback = expectedFire === fire;
-// 		})
-
-// 		expect(hasFireCallback).to.be.true;
-// 	});
-// });

@@ -1,7 +1,7 @@
-import { isString, isFunction } from './utilities/conditions';
+import { isString, isFunction, hasDuplicates } from './utilities/conditions';
 import isArray from '../libs/isArray';
 import fireArguments from './fire-arguments';
-import updateeventDescriptionstore from './update-event-type-store';
+import updateEventTypeStore from './update-event-type-store';
 import getTargetsAsElements from './get-targets-as-elements';
 import eventHandler from './event-handler';
 import logError from './log-error';
@@ -58,6 +58,13 @@ function yoga(targets, eventTypes, yogaCallback, interfaces) {
 		 * If using the YogaFire API.
 		 */
 		eventDescriptions = eventTypes.split(':');
+
+		if(hasDuplicates(eventDescriptions)){
+			logError({
+				message: messages.duplicateEventTypes
+			});
+		}
+
 	} else { 
 		/**
 		 * If using the addEventListener API for HyperEvents.
@@ -93,7 +100,7 @@ function yoga(targets, eventTypes, yogaCallback, interfaces) {
 		/**
 		 * Updates eventDescriptions and the associated callback.
 		 */
-		updateeventDescriptionstore.call(
+		updateEventTypeStore.call(
 			eventHandler,
 			eventDescriptions,
 			elements,
