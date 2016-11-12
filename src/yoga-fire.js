@@ -1,10 +1,11 @@
 import { isString, isFunction } from './utilities/conditions';
 import isArray from '../libs/isArray';
 import fireArguments from './fire-arguments';
-import updateEventTypeStore from './update-event-type-store';
+import updateeventDescriptionstore from './update-event-type-store';
 import getTargetsAsElements from './get-targets-as-elements';
 import eventHandler from './event-handler';
-
+import logError from './log-error';
+import messages from './error-messages';
 
 /**
  * The API used in conjunction with yoga.
@@ -18,38 +19,52 @@ function fire(callback) {
 /**
  * Handles targets and event types.
  * @param {Array|Element|HTMLCollection} targets - Elements to listen to.
- * @param {string} eventDescription	- An single or list of event types.
+ * @param {string} eventTypes	- An single or list of event types.
  * @param {Function} yogaCallback - The callback function.
  * @param {Array} interfaces - UI panels.
  */
-function yoga(targets, eventDescription, yogaCallback, interfaces) {
-	if(!targets){
-		throw new Error('YogaFire: No targets were defined');
+function yoga(targets, eventTypes, yogaCallback, interfaces) {
+	let elements;
+	let eventDescriptions;
+
+	if(targets){
+		elements = getTargetsAsElements(targets);
+	}else{
+		logError({
+			message: messages.targets
+		});		
 	}
-	if(!eventDescription){
-		throw new Error('YogaFire: No eventTypes were defined');
+
+
+
+	if(!eventTypes){
+		logError({
+			message: messages.eventTypes
+		});
 	}
 
 	if(interfaces && !isArray(interfaces)){
-		throw new Error('YogaFire: interfaces is not an Array');
+		logError({
+			message: messages.interfaces
+		});
 	}
 
-	const elements = getTargetsAsElements(targets);
-	let eventTypes;
+	
+	
 
-	// Check if eventDescription is a yogaCallback or string.
-	if (isString(eventDescription)) {
+	// Check if eventTypes is a yogaCallback or string.
+	if (isString(eventTypes)) {
 		/**
 		 * If using the YogaFire API.
 		 */
-		eventTypes = eventDescription.split(':');
-	} else {
+		eventDescriptions = eventTypes.split(':');
+	} else { 
 		/**
 		 * If using the addEventListener API for HyperEvents.
 		 */
 
 		// @TODO: hyperelment with addeventlistener (a wrapper to only use addeventlistener)
-		return;
+		// return;
 	}
 
 
@@ -76,16 +91,18 @@ function yoga(targets, eventDescription, yogaCallback, interfaces) {
 		const fireAPIArgument = yogaCallback.call(this, fire);
 
 		/**
-		 * Updates eventTypes and the associated callback.
+		 * Updates eventDescriptions and the associated callback.
 		 */
-		updateEventTypeStore.call(
+		updateeventDescriptionstore.call(
 			eventHandler,
-			eventTypes,
+			eventDescriptions,
 			elements,
 			fireAPIArgument
 		);
 	}else{
-		throw new Error('YogaFire: No callback was provided');
+		logError({
+			message: messages.yogaCallback
+		});
 	}
 }
 

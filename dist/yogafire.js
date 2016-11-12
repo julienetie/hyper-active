@@ -376,74 +376,6 @@ var isFunction = function isFunction(value) {
 	return typeof value === 'function';
 };
 
-// /**
-//  * Browser Support:
-//  * 
-//  * Safari: 		6+
-//  * Chrome:
-//  * Opera:       18+
-//  * IE: 			9+
-//  * Firefox:     
-//  * Edge:      
-//  * 
-//  * IOS: 		6+
-//  * Android M:   4+
-//  * Chrome M:     
-//  * Earlier versions may work but will not be supported in development.
-//  */
-
-
-// export {
-// 	/*
-// 		MouseEvent.buttons
-// 		¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯	
-// 	*/
-// 	buttons(event) {
-// 		if ('buttons' in event) {
-// 			return event.buttons;
-// 		} else if ('which' in event) {
-// 			let value = event.which;
-// 			if (value === 2) {
-// 				return 4;
-// 			} else if (value === 3) {
-// 				return 2;
-// 			} else if (value > 0) {
-// 				return 1 << (value - 1);
-// 			}
-// 		}
-
-// 	},
-// 	/*	
-// 		MouseEvent.relatedTarget
-// 		¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
-// 	*/
-// 	relatedTarget(event) {
-// 		return event.relatedTarget || (
-// 			event.fromElement === event.target ?
-// 			event.toElement : event.fromElement);
-// 	}
-
-// }
-
-function buttons(event) {
-	if ('buttons' in event) {
-		return event.buttons;
-	} else if ('which' in event) {
-		var value = event.which;
-		if (value === 2) {
-			return 4;
-		} else if (value === 3) {
-			return 2;
-		} else if (value > 0) {
-			return 1 << value - 1;
-		}
-	}
-}
-
-function relatedTarget(event) {
-	return event.relatedTarget || (event.fromElement === event.target ? event.toElement : event.fromElement);
-}
-
 /**
  * The arguments to be passed to the fire API callback.
  */
@@ -525,87 +457,98 @@ var getTargetsAsElements = function getTargetsAsElements(value) {
 	return elements;
 };
 
-/**
- * The context passed to addEventListener.
- */
+var eventDelegator = function eventDelegator(e, callback, eventType, validTarget) {
+	var target = e.target;
+	var watchElements = eventTypesStore[eventType][0];
+	var watchElementsLength = watchElements.length;
+
+	/**
+  * Assign the arguments to be passed to fire.
+  */
+	fireArguments.e = e;
+	fireArguments.target = target;
+	fireArguments.parent = target.parent;
+
+	/**
+  * Fires the returned callback of fire for
+  * matching targets per eventType.
+  */
+	callback(fireArguments);
+};
+
+// /**
+//  * Browser Support:
+//  * 
+//  * Safari: 		6+
+//  * Chrome:
+//  * Opera:       18+
+//  * IE: 			9+
+//  * Firefox:     
+//  * Edge:      
+//  * 
+//  * IOS: 		6+
+//  * Android M:   4+
+//  * Chrome M:     
+//  * Earlier versions may work but will not be supported in development.
+//  */
+
+
+// export {
+// 	/*
+// 		MouseEvent.buttons
+// 		¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯	
+// 	*/
+// 	buttons(event) {
+// 		if ('buttons' in event) {
+// 			return event.buttons;
+// 		} else if ('which' in event) {
+// 			let value = event.which;
+// 			if (value === 2) {
+// 				return 4;
+// 			} else if (value === 3) {
+// 				return 2;
+// 			} else if (value > 0) {
+// 				return 1 << (value - 1);
+// 			}
+// 		}
+
+// 	},
+// 	/*	
+// 		MouseEvent.relatedTarget
+// 		¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+// 	*/
+// 	relatedTarget(event) {
+// 		return event.relatedTarget || (
+// 			event.fromElement === event.target ?
+// 			event.toElement : event.fromElement);
+// 	}
+
+// }
+
+function buttons(event) {
+	if ('buttons' in event) {
+		return event.buttons;
+	} else if ('which' in event) {
+		var value = event.which;
+		if (value === 2) {
+			return 4;
+		} else if (value === 3) {
+			return 2;
+		} else if (value > 0) {
+			return 1 << value - 1;
+		}
+	}
+}
+
+function relatedTarget(event) {
+	return event.relatedTarget || (event.fromElement === event.target ? event.toElement : event.fromElement);
+}
+
 var eventHandler = {};
 
 /**
- * The API used in conjunction with yoga.
- * @return - Callback.
+ * The handleEvent property for eventListeners.
  */
-function fire(callback) {
-	return callback;
-}
-
-/**
- * Handles targets and event types.
- * @param {Array|Element|HTMLCollection} targets - Elements to listen to.
- * @param {string} eventDescription	- An single or list of event types.
- * @param {Function} yogaCallback - The callback function.
- * @param {Array} interfaces - UI panels.
- */
-function yoga(targets, eventDescription, yogaCallback, interfaces) {
-	if (!targets) {
-		throw new Error('YogaFire: No targets were defined');
-	}
-	if (!eventDescription) {
-		throw new Error('YogaFire: No eventTypes were defined');
-	}
-
-	if (interfaces && !isArray(interfaces)) {
-		throw new Error('YogaFire: interfaces is not an Array');
-	}
-
-	var elements = getTargetsAsElements(targets);
-	var eventTypes = void 0;
-
-	// Check if eventDescription is a yogaCallback or string.
-	if (isString(eventDescription)) {
-		/**
-   * If using the YogaFire API.
-   */
-		eventTypes = eventDescription.split(':');
-	} else {
-		/**
-   * If using the addEventListener API for HyperEvents.
-   */
-
-		// @TODO: hyperelment with addeventlistener (a wrapper to only use addeventlistener)
-		return;
-	}
-
-	/**
-  * YogaFire API. Ensuring yogaCallback is used.
-  */
-	if (isFunction(yogaCallback)) {
-		if (interfaces && isArray(interfaces)) {
-			/**
-    * If interfaces supplied.
-    */
-			fireArguments.interface = interfaces;
-		}
-
-		/**
-   * Sets the data from the previous interface in 
-   * the rolling stone chain. 
-   */
-		// @TODO: setup data and example.
-		// fireArguments.data = 'this is data';
-
-
-		// Passes fire to the yogaCallback.
-		var fireAPIArgument = yogaCallback.call(this, fire);
-
-		/**
-   * Updates eventTypes and the associated callback.
-   */
-		updateEventTypeStore.call(eventHandler, eventTypes, elements, fireAPIArgument);
-	} else {
-		throw new Error('YogaFire: No callback was provided');
-	}
-}
-
 eventHandler.handleEvent = function (e) {
 	var eventsTargetPair = eventTypesStore[e.type];
 	var eventsTargetPairLength = eventsTargetPair.length;
@@ -613,7 +556,6 @@ eventHandler.handleEvent = function (e) {
 	var validTarget = void 0;
 
 	for (var i = 0; i < eventsTargetPairLength; i++) {
-
 		if (validTarget = matchTarget(eventsTargetPair[i], e.target)) {
 			currentCallBack = eventsTargetPair[i][1];
 			break;
@@ -663,129 +605,117 @@ function matchStored(element, target) {
 	return false;
 }
 
-// /**
-//  * Maintains the eventTypeStore and element targets.
-//  * @param {string} eventType - Type of event.
-//  * @param {Array} watchElements - Elements to watch.
-//  * @param {Function} callback - The API callback. 
-//  */
-// function updateEventTypeStore(eventType, watchElements, callback) {
-// 	const newEventLength = eventType.length;
-// 	let listenerToRemove;
-// 	let i = 0;
+var logError = function logError(_ref) {
+	var message = _ref.message,
+	    type = _ref.type,
+	    value = _ref.value;
 
-// 	this.callback = callback;
-
-// 	for (let i = 0; i < newEventLength; i++) {
-// 		this.eventType = eventType[i];
-
-// 		/**
-// 		 * only create new eventType entries if not yet properties.
-// 		 */
-// 		if (!eventTypesStore.hasOwnProperty(eventType[i])) {
-
-// 			eventTypesStore[eventType[i]] = [
-// 				[watchElements, callback]
-// 			];
-
-// 			window.addEventListener(eventType[i], this, true);
-// 		} else {
-// 			eventTypesStore[eventType[i]] = eventTypesStore[eventType[i]].concat([
-// 				[watchElements, callback]
-// 			]);
-// 		}
-// 	}
-// }
-
-
-/**
- * Compares targets to event targets.
- * @param {Object} e - Event.
- * @param {Function} callback - The API callback.
- * @param {string} eventType - The type of event.
- */
-var eventDelegator = function eventDelegator(e, callback, eventType, validTarget) {
-	var target = e.target;
-	var watchElements = eventTypesStore[eventType][0];
-	var watchElementsLength = watchElements.length;
+	var error = new Error();
 
 	/**
-  * Assign the arguments to be passed to fire.
+  * Logs YogaFire in the console.
   */
-	fireArguments.e = e;
-	fireArguments.target = target;
-	fireArguments.parent = target.parent;
+	if (typeof process === 'undefined') {
+		console.info("%cYogaFire", "color: #cc0000; font-size:1rem;");
+	}
 
-	/**
-  * Fires the returned callback of fire for
-  * matching targets per eventType.
-  */
-	callback(fireArguments);
+	error.message = message;
+	error.type = type;
+	error.value = value;
+	throw error;
 };
 
-// *
-//  * The API used in conjunction with yoga.
-//  * @return - Callback.
+var messages = {
+	targets: 'targets is not valid',
+	eventTypes: 'eventTypes is not valid',
+	yogaCallback: 'yogaCallback is not valid',
+	interfaces: 'interfaces is not valid'
+};
 
-// function fire(callback) {
-// 	return callback;
-// }
-
+function fire(callback) {
+	return callback;
+}
 
 /**
- *
+ * Handles targets and event types.
+ * @param {Array|Element|HTMLCollection} targets - Elements to listen to.
+ * @param {string} eventTypes	- An single or list of event types.
+ * @param {Function} yogaCallback - The callback function.
+ * @param {Array} interfaces - UI panels.
  */
-// function yoga(targets, eventDescription, yogaCallback, interfaces) {
-// 	let elements = getTargetsAsElements(targets);
-// 	let events;
+function yoga(targets, eventTypes, yogaCallback, interfaces) {
+	var elements = void 0;
+	var eventDescriptions = void 0;
+
+	if (targets) {
+		elements = getTargetsAsElements(targets);
+	} else {
+		logError({
+			message: messages.targets
+		});
+	}
+
+	if (!eventTypes) {
+		logError({
+			message: messages.eventTypes
+		});
+	}
+
+	if (interfaces && !isArray(interfaces)) {
+		logError({
+			message: messages.interfaces
+		});
+	}
+
+	// Check if eventTypes is a yogaCallback or string.
+	if (isString(eventTypes)) {
+		/**
+   * If using the YogaFire API.
+   */
+		eventDescriptions = eventTypes.split(':');
+	} else {}
+	/**
+  * If using the addEventListener API for HyperEvents.
+  */
+
+	// @TODO: hyperelment with addeventlistener (a wrapper to only use addeventlistener)
+	// return;
 
 
-// 	// Check if eventDescription is a yogaCallback or string.
-// 	if (isString(eventDescription)) {
-// 		/**
-// 		 * If using the YogaFire API.
-// 		 */
-// 		events = eventDescription.split(':');
-// 	} else {
-// 		/**
-// 		 * If using the addEventListener API for HyperEvents.
-// 		 */
+	/**
+  * YogaFire API. Ensuring yogaCallback is used.
+  */
+	if (isFunction(yogaCallback)) {
+		if (interfaces && isArray(interfaces)) {
+			/**
+    * If interfaces supplied.
+    */
+			fireArguments.interface = interfaces;
+		}
 
-// 		// @TODO: hyperelment with addeventlistener (a wrapper to only use addeventlistener)
-// 		return;
-// 	}
-
-
-// 	/**
-// 	 * YogaFire API. Ensuring yogaCallback is used.
-// 	 */
-// 	if (typeof yogaCallback === 'function') {
-// 		if (interfaces && isArray(interfaces)) {
-// 			/**
-// 			 * If interfaces supplied.
-// 			 */
-// 			fireArguments.interface = interfaces;
-// 		}
-
-// 		/**
-// 		 * Sets the data from the previous interface in 
-// 		 * the rolling stone chain. 
-// 		 */
-// 		fireArguments.data = 'this is data';
+		/**
+   * Sets the data from the previous interface in 
+   * the rolling stone chain. 
+   */
+		// @TODO: setup data and example.
+		// fireArguments.data = 'this is data';
 
 
-// 		// Passes fire to the yogaCallback.
-// 		const newCallback = yogaCallback.call(this, fire);
+		// Passes fire to the yogaCallback.
+		var fireAPIArgument = yogaCallback.call(this, fire);
 
-// 		/**
-// 		 * Updates eventTypes and the associated callback.
-// 		 */
-// 		updateEventTypeStore.call(eventHandler, events, elements, newCallback);
+		/**
+   * Updates eventDescriptions and the associated callback.
+   */
+		updateEventTypeStore.call(eventHandler, eventDescriptions, elements, fireAPIArgument);
+	} else {
+		logError({
+			message: messages.yogaCallback
+		});
+	}
+}
 
-// 	}
-// }
-
-
+// @TODO remove.
 window.yoga = yoga;
 
 exports.yoga = yoga;

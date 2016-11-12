@@ -4,7 +4,7 @@
   "description": "Advanced Event Delegation",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --compilers js:babel-register --recursive",
+    "test": "mocha --compilers js:babel-register --recursive -w",
     "build": "rollup -c",
     "watch": "rollup -c -w"
   },
@@ -25,6 +25,7 @@
     "babel-preset-es2015-rollup": "^1.2.0",
     "babel-register": "^6.18.0",
     "chai": "^3.5.0",
+    "colors": "^1.1.2",
     "jsdom": "^9.8.3",
     "lodash": "^4.16.4",
     "mocha": "^3.1.2",
