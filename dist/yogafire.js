@@ -1,7 +1,7 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-  typeof define === 'function' && define.amd ? define(['exports'], factory) :
-  (factory((global.yogafire = global.yogafire || {})));
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+	typeof define === 'function' && define.amd ? define(['exports'], factory) :
+	(factory((global.yogafire = global.yogafire || {})));
 }(this, (function (exports) { 'use strict';
 
 var isHTMLCollection = function isHTMLCollection(value) {
@@ -19,204 +19,14 @@ var isFunction = function isFunction(value) {
 	return typeof value === 'function';
 };
 
+var hasDuplicates = function hasDuplicates(array) {
+	return new Set(array).size !== array.length;
+};
+
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
   return typeof obj;
 } : function (obj) {
   return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-};
-
-
-
-
-
-var asyncGenerator = function () {
-  function AwaitValue(value) {
-    this.value = value;
-  }
-
-  function AsyncGenerator(gen) {
-    var front, back;
-
-    function send(key, arg) {
-      return new Promise(function (resolve, reject) {
-        var request = {
-          key: key,
-          arg: arg,
-          resolve: resolve,
-          reject: reject,
-          next: null
-        };
-
-        if (back) {
-          back = back.next = request;
-        } else {
-          front = back = request;
-          resume(key, arg);
-        }
-      });
-    }
-
-    function resume(key, arg) {
-      try {
-        var result = gen[key](arg);
-        var value = result.value;
-
-        if (value instanceof AwaitValue) {
-          Promise.resolve(value.value).then(function (arg) {
-            resume("next", arg);
-          }, function (arg) {
-            resume("throw", arg);
-          });
-        } else {
-          settle(result.done ? "return" : "normal", result.value);
-        }
-      } catch (err) {
-        settle("throw", err);
-      }
-    }
-
-    function settle(type, value) {
-      switch (type) {
-        case "return":
-          front.resolve({
-            value: value,
-            done: true
-          });
-          break;
-
-        case "throw":
-          front.reject(value);
-          break;
-
-        default:
-          front.resolve({
-            value: value,
-            done: false
-          });
-          break;
-      }
-
-      front = front.next;
-
-      if (front) {
-        resume(front.key, front.arg);
-      } else {
-        back = null;
-      }
-    }
-
-    this._invoke = send;
-
-    if (typeof gen.return !== "function") {
-      this.return = undefined;
-    }
-  }
-
-  if (typeof Symbol === "function" && Symbol.asyncIterator) {
-    AsyncGenerator.prototype[Symbol.asyncIterator] = function () {
-      return this;
-    };
-  }
-
-  AsyncGenerator.prototype.next = function (arg) {
-    return this._invoke("next", arg);
-  };
-
-  AsyncGenerator.prototype.throw = function (arg) {
-    return this._invoke("throw", arg);
-  };
-
-  AsyncGenerator.prototype.return = function (arg) {
-    return this._invoke("return", arg);
-  };
-
-  return {
-    wrap: function (fn) {
-      return function () {
-        return new AsyncGenerator(fn.apply(this, arguments));
-      };
-    },
-    await: function (value) {
-      return new AwaitValue(value);
-    }
-  };
-}();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-var get = function get(object, property, receiver) {
-  if (object === null) object = Function.prototype;
-  var desc = Object.getOwnPropertyDescriptor(object, property);
-
-  if (desc === undefined) {
-    var parent = Object.getPrototypeOf(object);
-
-    if (parent === null) {
-      return undefined;
-    } else {
-      return get(parent, property, receiver);
-    }
-  } else if ("value" in desc) {
-    return desc.value;
-  } else {
-    var getter = desc.get;
-
-    if (getter === undefined) {
-      return undefined;
-    }
-
-    return getter.call(receiver);
-  }
-};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-var set = function set(object, property, value, receiver) {
-  var desc = Object.getOwnPropertyDescriptor(object, property);
-
-  if (desc === undefined) {
-    var parent = Object.getPrototypeOf(object);
-
-    if (parent !== null) {
-      set(parent, property, value, receiver);
-    }
-  } else if ("value" in desc && desc.writable) {
-    desc.value = value;
-  } else {
-    var setter = desc.set;
-
-    if (setter !== undefined) {
-      setter.call(receiver, value);
-    }
-  }
-
-  return value;
 };
 
 /**
@@ -230,6 +40,7 @@ var set = function set(object, property, value, receiver) {
  */
 
 /** Used as the semantic version number. */
+/** Detect free variable `global` from Node.js. */
 var freeGlobal = (typeof global === 'undefined' ? 'undefined' : _typeof(global)) == 'object' && global && global.Object === Object && global;
 
 /** Detect free variable `self`. */
@@ -238,12 +49,35 @@ var freeSelf = (typeof self === 'undefined' ? 'undefined' : _typeof(self)) == 'o
 /** Used as a reference to the global object. */
 var root = freeGlobal || freeSelf || Function('return this')();
 
-/** Detect free variable `exports`. */
-var isArray = Array.isArray;
+// No operation performed.
+
 
 /*------------------------------------------------------------------------*/
 
-// Add methods that return unwrapped values in chain sequences.
+/**
+ * Checks if `value` is classified as an `Array` object.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is an array, else `false`.
+ * @example
+ *
+ * _.isArray([1, 2, 3]);
+ * // => true
+ *
+ * _.isArray(document.body.children);
+ * // => false
+ *
+ * _.isArray('abc');
+ * // => false
+ *
+ * _.isArray(_.noop);
+ * // => false
+ */
+var isArray = Array.isArray;
 
 /**
  * The arguments to be passed to the fire API callback.
@@ -255,6 +89,12 @@ var fireArguments = {};
  */
 var eventTypesStore = {};
 
+/**
+ * Maintains the eventTypeStore and element targets.
+ * @param {string} eventType - Type of event.
+ * @param {Array} watchElements - Elements to watch.
+ * @param {Function} callback - The API callback. 
+ */
 function updateEventTypeStore(eventType, watchElements, callback) {
 	var eventTypeLength = eventType.length;
 
@@ -288,6 +128,7 @@ function updateEventTypeStore(eventType, watchElements, callback) {
  */
 
 /** Used as the semantic version number. */
+/** `Object#toString` result references. */
 var objectTag = '[object Object]';
 
 /** Detect free variable `global` from Node.js. */
@@ -299,7 +140,16 @@ var freeSelf$1 = (typeof self === 'undefined' ? 'undefined' : _typeof(self)) == 
 /** Used as a reference to the global object. */
 var root$1 = freeGlobal$1 || freeSelf$1 || Function('return this')();
 
-/** Detect free variable `exports`. */
+/*--------------------------------------------------------------------------*/
+
+/**
+ * Creates a unary function that invokes `func` with its argument transformed.
+ *
+ * @private
+ * @param {Function} func The function to wrap.
+ * @param {Function} transform The argument transform.
+ * @returns {Function} Returns the new function.
+ */
 function overArg(func, transform) {
   return function (arg) {
     return func(transform(arg));
@@ -331,7 +181,28 @@ var objectToString = objectProto.toString;
 /** Built-in value references. */
 var getPrototype = overArg(Object.getPrototypeOf, Object);
 
-/** Used to lookup unminified function names. */
+// No operation performed.
+
+
+/*------------------------------------------------------------------------*/
+
+/**
+ * Checks if `value` is likely a DOM element.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is a DOM element, else `false`.
+ * @example
+ *
+ * _.isElement(document.body);
+ * // => true
+ *
+ * _.isElement('<body>');
+ * // => false
+ */
 function isElement(value) {
   return value != null && value.nodeType === 1 && isObjectLike(value) && !isPlainObject(value);
 }
@@ -404,10 +275,11 @@ function isPlainObject(value) {
   return typeof Ctor == 'function' && Ctor instanceof Ctor && funcToString.call(Ctor) == objectCtorString;
 }
 
-/*------------------------------------------------------------------------*/
-
-// Add methods that return unwrapped values in chain sequences.
-
+/**
+ * The elements to be compared as event targets.
+ * @param {string|HTMLElement|Array|HTMLCollection} value - target or targets.  
+ * @return {Array} - Array of HTMLElements.
+ */
 var getTargetsAsElements = function getTargetsAsElements(value) {
 	var elements = void 0;
 
@@ -463,6 +335,12 @@ function destruct() {
 	console.info('destruct function', this);
 }
 
+/**
+ * Compares targets to event targets.
+ * @param {Object} e - Event.
+ * @param {Function} callback - The API callback.
+ * @param {string} eventType - The type of event.
+ */
 var eventDelegator = function eventDelegator(callback, eventType, e, n, target, targets) {
 	var watchElements = eventTypesStore[eventType][0];
 	var watchElementsLength = watchElements.length;
@@ -554,6 +432,9 @@ function relatedTarget(event) {
 	return event.relatedTarget || (event.fromElement === event.target ? event.toElement : event.fromElement);
 }
 
+/**
+ * The context passed to addEventListener.
+ */
 var eventHandler = {};
 
 /**
@@ -654,6 +535,10 @@ var errorMessages = {
 	duplicateEventTypes: 'Duplicate eventTypes are not allowed'
 };
 
+/**
+ * The API used in conjunction with yoga.
+ * @return - Callback.
+ */
 function fire(callback) {
 	return callback;
 }
@@ -695,6 +580,12 @@ function yoga(targets, eventTypes, yogaCallback, interfaces) {
    * If using the YogaFire API.
    */
 		eventDescriptions = eventTypes.split(':');
+
+		if (hasDuplicates(eventDescriptions)) {
+			logError({
+				message: errorMessages.duplicateEventTypes
+			});
+		}
 	} else {}
 	/**
   * If using the addEventListener API for HyperEvents.
@@ -737,6 +628,7 @@ function yoga(targets, eventTypes, yogaCallback, interfaces) {
 	}
 }
 
+// @TODO remove.
 window.yoga = yoga;
 
 exports.yoga = yoga;
