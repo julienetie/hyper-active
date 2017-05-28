@@ -29,7 +29,7 @@ fire({
 ```
 #### Remove events
 Remove specific targets or entire event listeners.
-```
+```javascript
 import { ceaseFire } from 'yogafire';
 
 ceaseFire({
