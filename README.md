@@ -3,46 +3,60 @@
 A Flexible Event Delegation Library
 
 ```php
-Working ALPHA, use at your own risk.
+Prototype, don't use this library just yet!
 ```
 ## Simple Event Delegation  
-yogaFire allows you to compose complex event delegation patterns in 
-an compact with all the necessary tools at your fingertips.
+yogaFire allows you to compose complex event delegation patterns with all the necessary tools at your fingertips.
 
-#### No Delegation.
+#### Fire events with yogaFire Event Delegation.
 ```javascript 
-  // Grab 3 elements and display "Hello I am <element>"
-  var element1 = document.getElementsByClassName('element1').item(0);
-  var element2 = document.querySelector('.element2');
-  var element3 = document.getElementById('element1');
-  
-  element1.addEventListener('click',function(e){ console.log('Hello I am ' + e.target);},false);
-  element2.addEventListener('click',function(e){ console.log('Hello I am ' + e.target);},true);
-  element3.addEventListener('click',function(e){ console.log('Hello I am ' + e.target);},false);
-```
-or...
+import { fire } from 'yogafire';
 
-#### Return fire with yogaFire Event Delegation.
-```javascript 
-    yoga(['.element1','.element2','#element3'],'click',(fire)=>{
-      return fire(({target})=>{
-        console.info('Hello I am ' + target);
-      });
-    });
+fire({
+    click: {
+        targets: ['.target1', '.target2', '.target3'],
+        action: ({target}) => console.log(`This target is ${target.className}` 
+    },
+    'mousemove:dblclick': {
+        targets: 'click' // Link reference
+        action: aFunctionForMouseMoveDoubleClickAndBlurSeeTheBelowReference
+    },
+    blur: {
+        target: [input1,input2, '#textArea'],
+        action: 'mousemove:dblclick' // Link reference
+    } 
+  })
 ```
+#### Remove events
+Remove specific targets or entire event listeners.
+```
+import { ceaseFire } from 'yogafire';
+
+ceaseFire({
+  ignoreTargets: ['.target1', '.target2'],
+  removeEvents: [
+      'mousemove:dblclick',
+      'blur'
+  ]
+})
+
+```
+
+
 - yogaFire has no dependencies and can be use in any browser based project.
-- Supports virtual DOM elements for Hypertext  _Hyperevents_.
 - Supports IE9+ (No legacy bloat).
-- Pollyfills and normalises events inconsistencies.
-- Multiple target elements.
-- Multiple events per yoga call.
-- Multiple yoga calls without overhead.
+- Synthetic events: Pollyfills and normalises event inconsistencies.
+- Multiple targets.
+- Multiple event types.
+- Shared actions by link reference.
+- Shared targets by link reference.
+- Mouseenter and mouseleave emulation.
+- Debounce.
+- Remove events or ignore targets using ceaaseFire.
 - Extended parameters: event, target, parent, normalisation, interface and data.
-- Performance ideal for complex pages and weak mobile devices.
-- Ability to choose ancestors.
-- Event chaining.
+- Ideal for mobile performance.
+- Target ancestors, siblings, ancestor siblings (TBA). 
+- Event chaining (TBA).
+- Standard eventlistener wrapper for synthetic events.
 
-## Current supported events (More to be added)
-- MouseEvents
-
-MIT 2016 (c) Julien Etienne
+MIT 2017 (c) Julien Etienne
