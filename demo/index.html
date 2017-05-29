@@ -1,106 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-	<meta charset="UTF-8">
-	<title>YogaFire</title>
-	<style>
-	html,
-	body{
-		margin:0;
-		position: absolute;
-		width: 100%;
-		height: 100%;
-	}
-
-		.target1,
-		.target2,
-		#target3{
-			width: 6rem;
-		}
-
-		.target1{
-			padding: 1rem;
-			background: yellow;
-
-		}
-
-		.target2{
-			padding: 1rem;
-			background: blue;
-			margin: 20% auto;
-
-			
-		}
-
-		#target3{
-			padding: 1rem;
-					margin-left: 40rem;
-			background: green;
-			
-		}
-	</style>
+    <meta charset="UTF-8">
+    <title>YogaFire</title>
+    <style>
+    html,
+    body {
+        margin: 0;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+    }
+    
+    .target1,
+    .target2,
+    #target3 {
+        width: 6rem;
+    }
+    
+    .target1 {
+        padding: 1rem;
+        background: yellow;
+    }
+    
+    .target2 {
+        padding: 1rem;
+        background: blue;
+        margin: 20% auto;
+    }
+    
+    #target3 {
+        padding: 1rem;
+        margin-left: 40rem;
+        background: green;
+    }
+    </style>
 </head>
+
 <body>
+    <div class='target1'>
+        TEST
+        <div>
+            <button>SOME 3rd party widget</button>
+        </div>
+    </div>
+    <div class='target2'>
+        TEST 2
+    </div>
+    <div id='target3'>
+        TEST 3
+    </div>
+    <script src="../dist/yogafire.js"></script>
+    <script>
+    const {
+        fire
+    } = yogaFire;
+
+
+    function clickMouseoverAction(e) {
+        console.log('clickMouseoverAction', e.target, e.type);
+    };
+
+    function blurMousedownAction(e) {
+        console.log('blurMousedownAction', e.target, e.type);
+    };
 
 
 
+    fire({
+        mousemove: {
+            targets: ['.target1', '.target2'],
+            action: clickMouseoverAction
+        },
+        dblclick: {
+            targets: '#target3',
+            action: 'mousemove'
+        }
+    });
 
-<div class='target1'>
-	TEST
-	<div>
-		<button>SOME 3rd party widget</button>
-	</div>
-</div>
+    const singleEvent = e => console.log('Single Event' + e.target);
 
-<div class='target2'>
-	TEST 2
-</div>
-
-<div id='target3'>
-	TEST 3
-</div>
-
-	<script src="../dist/yogafire.js"></script>
-	<script>
-const button = document.getElementsByTagName('button').item(0);
-
-button.addEventListener('click',function(){
-	console.warn('WIDGET');
-},true)
-
-
-		yoga(['.target1','.target2'],'click:dblclick',(fire)=>{
-  			return fire(({e, target, data, interface})=>{
-  				console.info(target.className);
-  			});
-		},['someInterface']);
-
-		yoga(['#target3'],'click:dblclick',(fire)=>{
-  			return fire(({e, target, data, interface})=>{
-  				  				console.info('target ' + target.id);
-  			});
-		},['someInterface']);
-
-		// yoga(['.target1','.target2','#target3'],'click:mouseover',(fire)=>{
-  // 			return fire((fireArguments)=>{
-  // 				console.info(fireArguments);
-  // 			});
-		// },['someInterface']);
-
-// yoga(['#target3'],'click:dblclick',(fire)=>{
-// 		console.log(fire)
-// });
-	// yoga(['.target1','.target2'],'click:mouseover:mouseout:mousedown:dblclick',function (fire) {
-	// 		return fire(function(details){
-	// 			console.info(details.e, details.target, details.data, details.interface)
-	// 		});
-	// },['someInterface']);
-
-	</script>
+    fire('.target2', 'click', singleEvent, false);
+    </script>
 </body>
+
 </html>
-
-
-
-
-

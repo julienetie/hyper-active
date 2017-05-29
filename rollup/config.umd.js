@@ -3,7 +3,7 @@ import nodeResolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
 
 export default {
-	moduleName: 'yogafire',
+	moduleName: 'yogaFire',
 	entry: './src/index.js',
 	plugins: [
 		babel({
