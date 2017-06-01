@@ -79,9 +79,13 @@
         }
     });
 
-    const singleEvent = e => console.log('Single Event' + e.target);
+    const singleEvent = e => console.log('Single *** Event' + e.target);
 
-    fire('.target2', 'click', singleEvent, false);
+    const singleCeaseFire = fire('.target2', 'click', singleEvent, false);
+    console.log('singleCeaseFire', singleCeaseFire);
+
+
+    setTimeout(singleCeaseFire,3000);
     </script>
 </body>
 

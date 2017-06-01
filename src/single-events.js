@@ -5,25 +5,39 @@ const documentErrorMessage = 'Use an object parameter for global delegation.';
 /**
  * Represents a sum.
  *
- * @param {HTMLElement|string|Array} eventsObject - A selector, Element or array of either.
+ * @param {HTMLElement|string|Array} targetElements - A selector, Element or array of either.
  * @param {Array} eventsArgs - Parameters for addEventListener.
+ * @returns {Array} Returns singleCeaseFire functions in the order of provided targetElements.
  */
-export default (eventsObject, ...eventsArgs) => {
+export default (targetElements, ...eventsArgs) => {
+    const eventsArgsCopy = Array.from(eventsArgs);
+    const eventsArgsCopyLength = eventsArgsCopy.length;
     let elements;
 
-    if (isString(eventsObject)) {
-        if (eventsObject === 'document') {
+    // Check selector types.
+    if (isString(targetElements)) {
+        if (targetElements === 'document') {
             newError(documentErrorMessage);
         }
-        elements = [getElement(eventsObject)];
+        elements = [getElement(targetElements)];
     } else {
-        if (eventsObject === document) {
+        if (targetElements === document) {
             newError(documentErrorMessage);
         }
-        elements = isElement(eventsObject) ? [eventsObject] : eventsObject;
+        elements = isElement(targetElements) ? [targetElements] : targetElements;
     }
 
-    elements
+    const singleCeaseFires = elements
         .map(selector => isString(selector) ? getElement(selector) : selector)
-        .forEach(element => element.addEventListener(...eventsArgs));
+        .map(element => {
+            if (eventsArgsCopyLength === 2) {
+                eventsArgsCopy.push('false');
+            }
+            element.addEventListener(...eventsArgsCopy);
+
+            // singleCeaseFire functions.
+            return () => element.removeEventListener(...eventsArgsCopy);
+        });
+
+    return elements.length === 1 ? singleCeaseFires[0] : singleCeaseFires;
 };

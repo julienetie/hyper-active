@@ -10,6 +10,70 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
 };
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+var toConsumableArray = function (arr) {
+  if (Array.isArray(arr)) {
+    for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
+
+    return arr2;
+  } else {
+    return Array.from(arr);
+  }
+};
+
 var isObject = function isObject(value) {
     return value != null && (typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object' && Array.isArray(value) === false;
 };
@@ -40,7 +104,12 @@ var isPlaneObject = (function (value) {
     return true;
 });
 
-var addEventListeners = (function (eventListeners) {
+/**
+ * Attaches event listeners according to event discriptions.
+ *
+ * @param {Array} eventDescriptions - Event listener descriptions to be attached to the document.
+ */
+var addEventListeners = (function (eventDescriptions) {
     var handler = function handler(e, suspects, action) {
         var checkTagName = function checkTagName(cleanSuspects, tagName) {
             if (cleanSuspects.includes(tagName)) {
@@ -70,10 +139,21 @@ var addEventListeners = (function (eventListeners) {
         }
     };
 
-    eventListeners.forEach(function (eventListener) {
-        document.addEventListener(eventListener.eventType, function (e) {
-            return handler(e, eventListener.targets, eventListener.action);
+    return eventDescriptions.map(function (_ref, index) {
+        var eventType = _ref.eventType,
+            targets = _ref.targets,
+            action = _ref.action;
+
+        document.addEventListener(eventType, function (e) {
+            return handler(e, targets, action);
         }, false);
+        return {
+            eventType: eventType,
+            targets: targets,
+            handler: action,
+            useCapture: false,
+            index: index
+        };
     });
 });
 
@@ -97,33 +177,47 @@ var documentErrorMessage = 'Use an object parameter for global delegation.';
 /**
  * Represents a sum.
  *
- * @param {HTMLElement|string|Array} eventsObject - A selector, Element or array of either.
+ * @param {HTMLElement|string|Array} targetElements - A selector, Element or array of either.
  * @param {Array} eventsArgs - Parameters for addEventListener.
+ * @returns {Array} Returns singleCeaseFire functions in the order of provided targetElements.
  */
-var singleEvents = (function (eventsObject) {
+var singleEvents = (function (targetElements) {
     for (var _len = arguments.length, eventsArgs = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
         eventsArgs[_key - 1] = arguments[_key];
     }
 
+    var eventsArgsCopy = Array.from(eventsArgs);
+    var eventsArgsCopyLength = eventsArgsCopy.length;
     var elements = void 0;
 
-    if (isString(eventsObject)) {
-        if (eventsObject === 'document') {
+    // Check selector types.
+    if (isString(targetElements)) {
+        if (targetElements === 'document') {
             newError(documentErrorMessage);
         }
-        elements = [getElement(eventsObject)];
+        elements = [getElement(targetElements)];
     } else {
-        if (eventsObject === document) {
+        if (targetElements === document) {
             newError(documentErrorMessage);
         }
-        elements = isElement(eventsObject) ? [eventsObject] : eventsObject;
+        elements = isElement(targetElements) ? [targetElements] : targetElements;
     }
 
-    elements.map(function (selector) {
+    var singleCeaseFires = elements.map(function (selector) {
         return isString(selector) ? getElement(selector) : selector;
-    }).forEach(function (element) {
-        return element.addEventListener.apply(element, eventsArgs);
+    }).map(function (element) {
+        if (eventsArgsCopyLength === 2) {
+            eventsArgsCopy.push('false');
+        }
+        element.addEventListener.apply(element, toConsumableArray(eventsArgsCopy));
+
+        // singleCeaseFire functions.
+        return function () {
+            return element.removeEventListener.apply(element, toConsumableArray(eventsArgsCopy));
+        };
     });
+
+    return elements.length === 1 ? singleCeaseFires[0] : singleCeaseFires;
 });
 
 var firePartial = function firePartial() {

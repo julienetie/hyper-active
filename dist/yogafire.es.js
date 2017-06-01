@@ -59,15 +59,20 @@ const isString = value => typeof value === 'string';
 
 
 const isElement = value => value instanceof window.Element;
+const getElement = selector => document.querySelector(selector);
+const newError = message => {
+  throw new Error(message);
+};
 
 const documentErrorMessage = 'Use an object parameter for global delegation.';
 
-const newError = message => {
-    throw new Error(message);
-};
-
-const singleEvents = (eventsObject, ...eventsArgs) => {
-    const getElement = document.querySelector;
+/**
+ * Represents a sum.
+ *
+ * @param {HTMLElement|string|Array} eventsObject - A selector, Element or array of either.
+ * @param {Array} eventsArgs - Parameters for addEventListener.
+ */
+var singleEvents = ((eventsObject, ...eventsArgs) => {
     let elements;
 
     if (isString(eventsObject)) {
@@ -83,64 +88,53 @@ const singleEvents = (eventsObject, ...eventsArgs) => {
     }
 
     elements.map(selector => isString(selector) ? getElement(selector) : selector).forEach(element => element.addEventListener(...eventsArgs));
-};
+});
 
 const firePartial = () => {
-    const eventListeners = [];
     const actionsIndexReference = [];
     const actionsReference = [];
     const targetsIndexReference = [];
     const targetsReference = [];
 
-    return (eventsObject, singleEventType, singleHandler, singleCapture) => {
-        console.log('hello');
+    return (eventsObject, ...singleParams) => {
         if (!isPlaneObject(eventsObject)) {
-            return singleEvents(eventsObject, singleEventType, singleHandler, singleCapture);
+            return singleEvents(eventsObject, ...singleParams);
         }
+        const eventsObjectKeys = Object.keys(eventsObject);
 
-        for (let eventType in eventsObject) {
-            const { target, targets, action } = eventsObject[eventType];
+        const eventListenersMulti = eventsObjectKeys.map(eventTypes => {
+            const { target, targets, action } = eventsObject[eventTypes];
             const eventsGroupTargets = targets || target;
-
             let actionCopy;
-            let isActionCopy;
-            let targetsCopy;
-            let isTargetsCopy;
 
-            // List of real actions.
             if (typeof action === 'function') {
-                actionsIndexReference.push(eventType);
+                actionsIndexReference.push(eventTypes);
                 actionsReference.push(action);
                 actionCopy = action;
             } else {
                 actionCopy = actionsReference[actionsIndexReference.indexOf(action)];
             }
 
-            // Add Targets.
-            targetsIndexReference.push(eventType);
+            targetsIndexReference.push(eventTypes);
             targetsReference.push(eventsGroupTargets);
 
             const targetsIndex = targetsIndexReference.indexOf(eventsGroupTargets);
-            if (targetsIndex >= 0) {
-                targetsCopy = targetsReference[targetsIndex];
-            } else {
-                targetsCopy = eventsGroupTargets;
-            }
+            const targetsCopy = targetsIndex >= 0 ? targetsReference[targetsIndex] : eventsGroupTargets;
 
-            eventType.split(':').forEach(eventType => {
-                eventListeners.push({
-                    eventType,
-                    targets: typeof targetsCopy === 'string' ? [targetsCopy] : targetsCopy,
-                    action: actionCopy
-                });
-            });
-        }
+            return eventTypes.split(':').map(eventType => ({
+                eventType,
+                targets: isString(targetsCopy) ? [targetsCopy] : targetsCopy,
+                action: actionCopy
+            }));
+        });
 
-        addEventListeners(eventListeners);
+        const eventListeners = eventListenersMulti.reduce((a, b) => a.concat(b), []);
+        return addEventListeners(eventListeners);
     };
 };
 
-const fire = firePartial();
+var fire = firePartial();
+
 const ceaseFire = () => {};
 
 export { fire, ceaseFire };

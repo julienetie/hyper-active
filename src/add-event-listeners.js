@@ -1,4 +1,9 @@
-export default eventListeners => {
+/**
+ * Attaches event listeners according to event discriptions.
+ *
+ * @param {Array} eventDescriptions - Event listener descriptions to be attached to the document.
+ */
+export default eventDescriptions => {
     const handler = (e, suspects, action) => {
         const checkTagName = (cleanSuspects, tagName) => {
             if (cleanSuspects.includes(tagName)) {
@@ -26,8 +31,19 @@ export default eventListeners => {
     };
 
 
-    eventListeners.forEach(eventListener => {
-        document.addEventListener(eventListener.eventType,
-            e => handler(e, eventListener.targets, eventListener.action), false);
+    return eventDescriptions.map(({ eventType, targets, action }, index) => {
+        document.addEventListener(eventType,
+            e => handler(
+                e,
+                targets,
+                action,
+            ), false);
+        return {
+            eventType,
+            targets,
+            handler: action,
+            useCapture: false,
+            index,
+        };
     });
 };
