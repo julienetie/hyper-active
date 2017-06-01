@@ -1,14 +1,16 @@
 <img src="http://oi65.tinypic.com/oiuo06.jpg" width="300px">
-# yogaFire
-A Flexible Event Delegation Library
 
-```php
-Prototype, don't use this library just yet!
 ```
-## Simple Event Delegation  
-yogaFire allows you to compose complex event delegation patterns with all the necessary tools at your fingertips.
+Alpha: Not for production.
+```
 
-#### Fire events with yogaFire Event Delegation.
+# yogaFire
+
+## A Flexible Event Delegation Library
+
+
+
+### Event Delegation
 ```javascript 
 import { fire } from 'yogafire';
 
@@ -27,8 +29,7 @@ fire({
     } 
   })
 ```
-#### Remove events
-Remove specific targets or entire event listeners.
+### Remove events
 ```javascript
 import { ceaseFire } from 'yogafire';
 
@@ -39,9 +40,15 @@ ceaseFire({
       'blur'
   ]
 })
-
 ```
-
+### Single events
+```javascript
+const singleCeaseFires = fire(['.target1', '#target2'], 'click', () => console.log('Hello World!'), false)
+```
+### Remove single events
+```javascript
+singleCeaseFires.map(ceaseFire => ceaseFire())
+```
 
 - yogaFire has no dependencies and can be use in any browser based project.
 - Supports IE9+ (No legacy bloat).
