@@ -62,5 +62,7 @@ singleCeaseFires.map(ceaseFire => ceaseFire())
 - Extended parameters. (TBA)
 - Target ancestors, siblings, ancestor siblings (TBA).
 - Synthetic single events.
+- Remove events without parameters.
+- Ability to ignore tracked targets.
 
-MIT 2017 (c) Julien Etienne
+MIT 2017 © Julien Etienne
