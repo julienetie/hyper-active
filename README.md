@@ -10,7 +10,7 @@ Alpha: Not for production.
 
 
 
-### Event Delegation
+### Event delegation
 ```javascript 
 import { fire } from 'yogafire';
 
@@ -29,7 +29,7 @@ fire({
     } 
   })
 ```
-### Remove events
+### Remove delegated events
 ```javascript
 import { ceaseFire } from 'yogafire';
 
@@ -50,20 +50,17 @@ const singleCeaseFires = fire(['.target1', '#target2'], 'click', () => console.l
 singleCeaseFires.map(ceaseFire => ceaseFire())
 ```
 
-- yogaFire has no dependencies and can be use in any browser based project.
-- Supports IE9+ (No legacy bloat).
-- Synthetic events: Pollyfills and normalises event inconsistencies.
-- Multiple targets.
-- Multiple event types.
+- No dependencies.
+- IE9+s support (No legacy bloat).
+- Synthetic events: Pollyfills and normalises event inconsistencies. (TBA)
+- Supports multiple targets.
+- Supports multiple event types.
 - Shared actions by link reference.
 - Shared targets by link reference.
-- Mouseenter and mouseleave emulation.
-- Debounce.
-- Remove events or ignore targets using ceaaseFire.
-- Extended parameters: event, target, parent, normalisation, interface and data.
-- Ideal for mobile performance.
-- Target ancestors, siblings, ancestor siblings (TBA). 
-- Event chaining (TBA).
-- Standard eventlistener wrapper for synthetic events.
+- Mouseenter and mouseleave emulation. (TBA)
+- Debounce feature. (TBA)
+- Extended parameters. (TBA)
+- Target ancestors, siblings, ancestor siblings (TBA).
+- Synthetic single events.
 
 MIT 2017 (c) Julien Etienne
