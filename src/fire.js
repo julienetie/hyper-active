@@ -19,7 +19,7 @@ const firePartial = () => {
         const eventsObjectKeys = Object.keys(eventsObject);
 
         const eventListenersMulti = eventsObjectKeys
-            .map(eventTypes => {
+            .map((eventTypes, i) => {
                 const { target, targets, action } = eventsObject[
                     eventTypes
                 ];
@@ -52,12 +52,16 @@ const firePartial = () => {
                             targetsCopy,
                         ] : targetsCopy,
                         action: actionCopy,
+                        identity: eventsObjectKeys[i]
                     }));
             });
 
         const eventListeners = eventListenersMulti
             .reduce((a, b) => a.concat(b), []);
-        return addEventListeners(eventListeners);
+
+        // attachedEvents.push(eventListeners);
+
+        addEventListeners(eventListeners);
     };
 };
 

@@ -1,10 +1,12 @@
+import storage from './attached-events';
+
 /**
  * Attaches event listeners according to event discriptions.
  *
  * @param {Array} eventDescriptions - Event listener descriptions to be attached to the document.
  */
 export default eventDescriptions => {
-    const handler = (e, suspects, action) => {
+    const innerHandler = (e, suspects, action) => {
         const checkTagName = (cleanSuspects, tagName) => {
             if (cleanSuspects.includes(tagName)) {
                 action(e);
@@ -31,19 +33,26 @@ export default eventDescriptions => {
     };
 
 
-    return eventDescriptions.map(({ eventType, targets, action }, index) => {
-        document.addEventListener(eventType,
-            e => handler(
-                e,
-                targets,
-                action,
-            ), false);
+    const resolvedEvents = eventDescriptions.map(({ eventType, targets, action , identity}, index) => {
+        const handler = e => innerHandler(e, targets, action);
+
+        const addEvent = () => document.addEventListener(eventType, handler, false);
+        addEvent();
+
+        const removeEvent = () => document
+            .removeEventListener(eventType, handler, false);
+
         return {
             eventType,
             targets,
             handler: action,
             useCapture: false,
+            identity,
             index,
+            addEvent,
+            removeEvent,
         };
     });
+
+    storage.attachedEvents = resolvedEvents;
 };

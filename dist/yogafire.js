@@ -104,13 +104,17 @@ var isPlaneObject = (function (value) {
     return true;
 });
 
+var storage = {
+	attachedEvents: null
+};
+
 /**
  * Attaches event listeners according to event discriptions.
  *
  * @param {Array} eventDescriptions - Event listener descriptions to be attached to the document.
  */
 var addEventListeners = (function (eventDescriptions) {
-    var handler = function handler(e, suspects, action) {
+    var innerHandler = function innerHandler(e, suspects, action) {
         var checkTagName = function checkTagName(cleanSuspects, tagName) {
             if (cleanSuspects.includes(tagName)) {
                 action(e);
@@ -139,22 +143,38 @@ var addEventListeners = (function (eventDescriptions) {
         }
     };
 
-    return eventDescriptions.map(function (_ref, index) {
+    var resolvedEvents = eventDescriptions.map(function (_ref, index) {
         var eventType = _ref.eventType,
             targets = _ref.targets,
-            action = _ref.action;
+            action = _ref.action,
+            identity = _ref.identity;
 
-        document.addEventListener(eventType, function (e) {
-            return handler(e, targets, action);
-        }, false);
+        var handler = function handler(e) {
+            return innerHandler(e, targets, action);
+        };
+
+        var addEvent = function addEvent() {
+            return document.addEventListener(eventType, handler, false);
+        };
+        addEvent();
+
+        var removeEvent = function removeEvent() {
+            return document.removeEventListener(eventType, handler, false);
+        };
+
         return {
             eventType: eventType,
             targets: targets,
             handler: action,
             useCapture: false,
-            index: index
+            identity: identity,
+            index: index,
+            addEvent: addEvent,
+            removeEvent: removeEvent
         };
     });
+
+    storage.attachedEvents = resolvedEvents;
 });
 
 var isString = function isString(value) {
@@ -236,7 +256,7 @@ var firePartial = function firePartial() {
         }
         var eventsObjectKeys = Object.keys(eventsObject);
 
-        var eventListenersMulti = eventsObjectKeys.map(function (eventTypes) {
+        var eventListenersMulti = eventsObjectKeys.map(function (eventTypes, i) {
             var _eventsObject$eventTy = eventsObject[eventTypes],
                 target = _eventsObject$eventTy.target,
                 targets = _eventsObject$eventTy.targets,
@@ -263,7 +283,8 @@ var firePartial = function firePartial() {
                 return {
                     eventType: eventType,
                     targets: isString(targetsCopy) ? [targetsCopy] : targetsCopy,
-                    action: actionCopy
+                    action: actionCopy,
+                    identity: eventsObjectKeys[i]
                 };
             });
         });
@@ -271,13 +292,45 @@ var firePartial = function firePartial() {
         var eventListeners = eventListenersMulti.reduce(function (a, b) {
             return a.concat(b);
         }, []);
-        return addEventListeners(eventListeners);
+
+        // attachedEvents.push(eventListeners);
+
+        addEventListeners(eventListeners);
     };
 };
 
 var fire = firePartial();
 
-var ceaseFire = function ceaseFire() {};
+var notAnArray = 'ignoreTargets should be an Array';
+
+var ceaseFire = function ceaseFire(ceaseFireOptions) {
+    console.log('fwefw');
+    if (ceaseFireOptions.hasOwnProperty('ignoreTargets')) {
+        if (Array.isArray(ceaseFireOptions.ignoreTargets)) {
+            // console.log(ceaseFireOptions.ignoreTargets); 	
+        } else {
+            newError(notAnArray);
+        }
+    }
+
+    // Remove event listeners
+    if (ceaseFireOptions.hasOwnProperty('removeEvents')) {
+        if (Array.isArray(ceaseFireOptions.removeEvents)) {
+
+            storage.attachedEvents = storage.attachedEvents.filter(function (eventDetails) {
+                var hasEventToRemove = ceaseFireOptions.removeEvents.includes(eventDetails.identity);
+                console.log(hasEventToRemove);
+                if (hasEventToRemove) {
+                    eventDetails.removeEvent();
+                } else {
+                    return eventDetails;
+                }
+            });
+        } else {
+            newError(notAnArray);
+        }
+    }
+};
 
 exports.fire = fire;
 exports.ceaseFire = ceaseFire;

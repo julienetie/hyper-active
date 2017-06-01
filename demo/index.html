@@ -54,7 +54,8 @@
     <script src="../dist/yogafire.js"></script>
     <script>
     const {
-        fire
+        fire,
+        ceaseFire
     } = yogaFire;
 
 
@@ -82,10 +83,15 @@
     const singleEvent = e => console.log('Single *** Event' + e.target);
 
     const singleCeaseFire = fire('.target2', 'click', singleEvent, false);
-    console.log('singleCeaseFire', singleCeaseFire);
 
+    setTimeout(singleCeaseFire, 3000);
 
-    setTimeout(singleCeaseFire,3000);
+    ceaseFire({
+        ignoreTargets: ['.target1', '.target2'],
+        removeEvents: ['dblclick:click', 'blur'] // You are removing property names not individual events.
+    });
+
+    
     </script>
 </body>
 
