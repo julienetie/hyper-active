@@ -1,4 +1,4 @@
-<img src="http://oi65.tinypic.com/oiuo06.jpg" width="300px">
+<img src="https://preview.ibb.co/bYQGNa/yoga_fire.gif" width="400px" center>
 
 ```
 Alpha: Not for production.
