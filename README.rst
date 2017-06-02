@@ -26,11 +26,11 @@ Event delegation
             handler: ({target}) => console.log(`The target is ${target.className}` 
         },
         'mousemove:dblclick': {
-            suspects: 'click' // Link reference
+            suspect: 'click' // Link reference
             handler: aFunctionForMouseMoveDoubleClickAndBlurSeeTheBelowReference
         },
         blur: {
-            suspect: [input1,input2, '#textArea'],
+            suspects: [input1,input2, '#textArea'],
             handler: 'mousemove:dblclick' // Link reference
         } 
       })
