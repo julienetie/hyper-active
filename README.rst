@@ -22,16 +22,16 @@ Event delegation
 
     fire({
         click: {
-            targets: ['.target1', '.target2', '.target3'],
-            action: ({target}) => console.log(`This target is ${target.className}` 
+            suspects: ['.suspect1', '.suspect2', '.suspect3'],
+            handler: ({target}) => console.log(`The target is ${target.className}` 
         },
         'mousemove:dblclick': {
-            targets: 'click' // Link reference
-            action: aFunctionForMouseMoveDoubleClickAndBlurSeeTheBelowReference
+            suspects: 'click' // Link reference
+            handler: aFunctionForMouseMoveDoubleClickAndBlurSeeTheBelowReference
         },
         blur: {
-            target: [input1,input2, '#textArea'],
-            action: 'mousemove:dblclick' // Link reference
+            suspect: [input1,input2, '#textArea'],
+            handler: 'mousemove:dblclick' // Link reference
         } 
       })
 
@@ -43,7 +43,7 @@ Ignore targets
     import { ceaseFire } from 'yogafire';
 
     ceaseFire({
-      ignoreTargets: ['.target1', '.target2']
+      ignoreSuspects: ['.suspect1', '.suspect2']
     })
     
 
@@ -67,7 +67,7 @@ Single events
 
 .. code:: javascript
   
-    const singleCeaseFires = fire(['.target1', '#target2'], 'click', () => console.log('Hello World!'), false)
+    const singleCeaseFires = fire(['.suspect1', '#suspect2'], 'click', () => console.log('Hello World!'), false)
 
 
 Remove single events
@@ -84,16 +84,16 @@ Details
 - No dependencies.
 - IE9+s support (No legacy bloat).
 - Synthetic events: Pollyfills and normalises event inconsistencies. (TBA)
-- Supports multiple targets.
+- Supports multiple suspects.
 - Supports multiple event types.
-- Shared actions by link reference.
-- Shared targets by link reference.
+- Shared handlers by link reference.
+- Shared suspects by link reference.
 - Mouseenter and mouseleave emulation. (TBA)
 - Debounce feature. (TBA)
 - Extended parameters. (TBA)
 - Target ancestors, siblings, ancestor siblings (TBA).
 - Synthetic single events.
 - Remove events without parameters.
-- Ability to ignore tracked targets.
+- Ability to ignore tracked suspects.
 
 MIT 2017 © Julien Etienne
