@@ -114,33 +114,69 @@ var storage = {
  * @param {Array} eventDescriptions - Event listener descriptions to be attached to the document.
  */
 var addEventListeners = (function (eventDescriptions) {
-    var innerHandler = function innerHandler(e, suspects, action) {
-        var checkTagName = function checkTagName(cleanSuspects, tagName) {
-            if (cleanSuspects.includes(tagName)) {
-                action(e);
-            }
-        };
+    /** 
+     * Checks if a tagName exist within suspects.
+     *
+     * @param {} cleanSuspects - suspects with removed prefixes. 
+     * @param {String} tagName - target tagName.
+     */
+    var checkTagName = function checkTagName(cleanSuspects, tagName) {
+        return cleanSuspects.includes(tagName);
+    };
 
+    /**
+     * isTarget manages suspects, targets and the storage.ignoredTargets data.
+     * 
+     * @param {Object} e - The event object.
+     * @param {Array} suspects - The possible targets.
+     * @param {Function} action - The API handler value. 
+     */
+    var isTarget = function isTarget(e, suspects, identity) {
         var target = e.target;
-        var cleanSuspects = suspects.map(function (suspect) {
+
+        // Check if there are suspects to ignore.
+        var hasSuspectsToIgnore = storage.ignoreTargets.hasOwnProperty(identity);
+        var vettedSuspects = void 0;
+
+        if (hasSuspectsToIgnore) {
+            var suspectsToIgnore = storage.ignoreTargets[identity];
+            vettedSuspects = suspects.filter(function (suspect) {
+                return !suspectsToIgnore.includes(suspect);
+            });
+        } else {
+            vettedSuspects = suspects;
+        }
+
+        var cleanSuspects = vettedSuspects.map(function (suspect) {
             return suspect.replace('.', '').replace('#', '');
         });
 
+        // Id match.
         if (cleanSuspects.includes(target.id)) {
-            action(e);
+            return true;
+
+            // Class match.
         } else if (target.className) {
             var hasClass = cleanSuspects.filter(function (suspect) {
                 return target.className.includes(suspect);
             }).length > 0;
 
             if (hasClass) {
-                action(e);
+                return true;
             } else {
-                checkTagName(cleanSuspects, target.tagName);
+
+                // TagName match.
+                return checkTagName(cleanSuspects, target.tagName);
             }
+
+            /*@TODO Throw error */
         } else {
-            checkTagName(cleanSuspects, target.tagName);
+
+            // TagName match.
+            return checkTagName(cleanSuspects, target.tagName);
         }
+
+        /*@TODO Throw error */
     };
 
     var resolvedEvents = eventDescriptions.map(function (_ref, index) {
@@ -150,14 +186,15 @@ var addEventListeners = (function (eventDescriptions) {
             identity = _ref.identity;
 
         var handler = function handler(e) {
-            return innerHandler(e, targets, action);
-        };
 
+            if (isTarget(e, targets, identity)) {
+                action(e);
+            }
+        };
         var addEvent = function addEvent() {
             return document.addEventListener(eventType, handler, false);
         };
         addEvent();
-
         var removeEvent = function removeEvent() {
             return document.removeEventListener(eventType, handler, false);
         };
@@ -304,22 +341,30 @@ var fire = firePartial();
 var notAnArray = 'ignoreTargets should be an Array';
 
 var ceaseFire = function ceaseFire(ceaseFireOptions) {
-    console.log('fwefw');
     if (ceaseFireOptions.hasOwnProperty('ignoreTargets')) {
-        if (Array.isArray(ceaseFireOptions.ignoreTargets)) {
-            // console.log(ceaseFireOptions.ignoreTargets); 	
+        if (isPlaneObject(ceaseFireOptions.ignoreTargets)) {
+            Object.keys(ceaseFireOptions.ignoreTargets).map(function (eventSetNamesOfignored) {
+
+                if (!storage.hasOwnProperty('ignoreTargets')) {
+                    storage.ignoreTargets = {};
+                }
+
+                var ignoredValue = ceaseFireOptions.ignoreTargets[eventSetNamesOfignored];
+                var ignoredValueArray = Array.isArray(ignoredValue) ? ignoredValue : [ignoredValue];
+                storage.ignoreTargets[eventSetNamesOfignored] = ignoredValueArray;
+            });
         } else {
             newError(notAnArray);
         }
     }
-
-    // Remove event listeners
+    console.log('storage', storage);
     if (ceaseFireOptions.hasOwnProperty('removeEvents')) {
         if (Array.isArray(ceaseFireOptions.removeEvents)) {
-
             storage.attachedEvents = storage.attachedEvents.filter(function (eventDetails) {
-                var hasEventToRemove = ceaseFireOptions.removeEvents.includes(eventDetails.identity);
-                console.log(hasEventToRemove);
+                var hasEventToRemove = ceaseFireOptions.removeEvents.some(function (eventToRemove) {
+                    return eventToRemove === eventDetails.identity;
+                });
+
                 if (hasEventToRemove) {
                     eventDetails.removeEvent();
                 } else {

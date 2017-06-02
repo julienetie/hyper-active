@@ -86,10 +86,13 @@
 
     setTimeout(singleCeaseFire, 3000);
 
-    ceaseFire({
-        ignoreTargets: ['.target1', '.target2'],
-        removeEvents: ['dblclick:click', 'blur'] // You are removing property names not individual events.
-    });
+    // ceaseFire({
+    //     ignoreTargets: {
+    //         mousemove: ['.target1', '.target2'], 
+    //         'dblclick:click': '#target3' 
+    //     },
+    //     removeEvents: ['dblclick:click', 'mousemove']
+    // });
 
     
     </script>
