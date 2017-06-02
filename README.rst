@@ -1,54 +1,71 @@
-<img src="https://preview.ibb.co/bYQGNa/yoga_fire.gif" width="400px" center>
+########
+yogafire
+########
+
+.. image:: https://preview.ibb.co/bYQGNa/yoga_fire.gif
+
 
 ```
 Alpha: Not for production.
 ```
 
-# yogaFire
-
-## A Flexible Event Delegation Library
-
+A Flexible Event Delegation Library
+###################################
 
 
-### Event delegation
-```javascript 
-import { fire } from 'yogafire';
+Event delegation
+================
 
-fire({
-    click: {
-        targets: ['.target1', '.target2', '.target3'],
-        action: ({target}) => console.log(`This target is ${target.className}` 
-    },
-    'mousemove:dblclick': {
-        targets: 'click' // Link reference
-        action: aFunctionForMouseMoveDoubleClickAndBlurSeeTheBelowReference
-    },
-    blur: {
-        target: [input1,input2, '#textArea'],
-        action: 'mousemove:dblclick' // Link reference
-    } 
-  })
-```
-### Remove delegated events
-```javascript
-import { ceaseFire } from 'yogafire';
+.. code:: javascript
+  
+    import { fire } from 'yogafire';
 
-ceaseFire({
-  ignoreTargets: ['.target1', '.target2'],
-  removeEvents: [
-      'mousemove:dblclick',
-      'blur'
-  ]
-})
-```
-### Single events
-```javascript
-const singleCeaseFires = fire(['.target1', '#target2'], 'click', () => console.log('Hello World!'), false)
-```
-### Remove single events
-```javascript
-singleCeaseFires.map(ceaseFire => ceaseFire())
-```
+    fire({
+        click: {
+            targets: ['.target1', '.target2', '.target3'],
+            action: ({target}) => console.log(`This target is ${target.className}` 
+        },
+        'mousemove:dblclick': {
+            targets: 'click' // Link reference
+            action: aFunctionForMouseMoveDoubleClickAndBlurSeeTheBelowReference
+        },
+        blur: {
+            target: [input1,input2, '#textArea'],
+            action: 'mousemove:dblclick' // Link reference
+        } 
+      })
+
+
+Remove delegated events
+=======================
+
+.. code:: javascript
+  
+    import { ceaseFire } from 'yogafire';
+
+    ceaseFire({
+      ignoreTargets: ['.target1', '.target2'],
+      removeEvents: [
+          'mousemove:dblclick',
+          'blur'
+      ]
+    })
+
+
+Single events
+=============
+
+.. code:: javascript
+  
+    const singleCeaseFires = fire(['.target1', '#target2'], 'click', () => console.log('Hello World!'), false)
+
+
+Remove single events
+====================
+
+.. code:: javascript
+    singleCeaseFires.map(ceaseFire => ceaseFire())
+
 
 - No dependencies.
 - IE9+s support (No legacy bloat).
