@@ -35,7 +35,7 @@ Event delegation
         } 
       })
 
-Ignore Targets
+Ignore targets
 =======================
 
 .. code:: javascript
@@ -74,8 +74,12 @@ Remove single events
 ====================
 
 .. code:: javascript
+
     singleCeaseFires.map(ceaseFire => ceaseFire())
 
+
+Details
+=======
 
 - No dependencies.
 - IE9+s support (No legacy bloat).
