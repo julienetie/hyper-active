@@ -35,6 +35,17 @@ Event delegation
         } 
       })
 
+Ignore Targets
+=======================
+
+.. code:: javascript
+  
+    import { ceaseFire } from 'yogafire';
+
+    ceaseFire({
+      ignoreTargets: ['.target1', '.target2']
+    })
+    
 
 Remove delegated events
 =======================
@@ -44,7 +55,6 @@ Remove delegated events
     import { ceaseFire } from 'yogafire';
 
     ceaseFire({
-      ignoreTargets: ['.target1', '.target2'],
       removeEvents: [
           'mousemove:dblclick',
           'blur'
