@@ -4,7 +4,7 @@ import storage from './storage';
  * Attaches event listeners according to event discriptions.
  *
  * @param {Array} eventDescriptions - Event listener descriptions to be attached to the document.
- */
+ */            
 export default eventDescriptions => {
     /** 
      * Checks if a tagName exist within suspects.
@@ -20,17 +20,18 @@ export default eventDescriptions => {
      * 
      * @param {Object} e - The event object.
      * @param {Array} suspects - The possible targets.
-     * @param {Function} action - The API handler value. 
+     * @param {Function} eventSetName - The fireConfig property name. 
      */
-    const isTarget = (e, suspects, identity) => {
+    const isTarget = (e, suspects, eventSetName) => {
         const target = e.target;
 
-        // Check if there are suspects to ignore.
-        const hasSuspectsToIgnore = storage.ignoreTargets.hasOwnProperty(identity);
+        // Check for suspects ot ignore.
+        const hasSuspectsToIgnore = storage.ignoreSuspects
+            .hasOwnProperty(eventSetName);
         let vettedSuspects;
 
         if (hasSuspectsToIgnore) {
-            const suspectsToIgnore = storage.ignoreTargets[identity];
+            const suspectsToIgnore = storage.ignoreSuspects[eventSetName];
             vettedSuspects = suspects.filter(
                 suspect => !suspectsToIgnore.includes(suspect)
             );
@@ -38,6 +39,7 @@ export default eventDescriptions => {
             vettedSuspects = suspects;
         }
 
+        // Removes class and id prefixes.
         const cleanSuspects = vettedSuspects.map(
             suspect => suspect.replace('.', '').replace('#', '')
         );
@@ -73,30 +75,35 @@ export default eventDescriptions => {
     };
 
 
-    const resolvedEvents = eventDescriptions
-        .map(({ eventType, targets, action, identity }, index) => {
-            const handler = e => {
-
-                if (isTarget(e, targets, identity)) {
-                    action(e);
+    const attachedEvent = eventDescriptions
+        .map(({ eventType, suspects, handler, eventSetName }, index) => {
+            
+            const handlerWrapper = e => {
+                if (isTarget(e, suspects, eventSetName)) {
+                    handler(e, e.target);
                 }
             };
-            const addEvent = () => document.addEventListener(eventType, handler, false);
+
+            const addEvent = () => document.addEventListener(
+                eventType, handlerWrapper, false
+            );
             addEvent();
-            const removeEvent = () => document
-                .removeEventListener(eventType, handler, false);
+            const removeEvent = () => document.removeEventListener(
+                eventType, handlerWrapper, false
+            );
 
             return {
                 eventType,
-                targets,
-                handler: action,
+                suspects,
+                handler,
                 useCapture: false,
-                identity,
+                eventSetName,
                 index,
                 addEvent,
                 removeEvent,
             };
         });
 
-    storage.attachedEvents = resolvedEvents;
+    // Share attached events between modules.
+    storage.attachedEvents = attachedEvent;
 };

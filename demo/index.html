@@ -71,12 +71,12 @@
 
     fire({
         mousemove: {
-            targets: ['.target1', '.target2'],
-            action: clickMouseoverAction
+            suspects: ['.target1', '.target2'],
+            handler: clickMouseoverAction
         },
         'dblclick:click': {
-            targets: '#target3',
-            action: 'mousemove'
+            suspect: 325235,
+            handler: 'mousemove'
         }
     });
 
@@ -86,13 +86,13 @@
 
     setTimeout(singleCeaseFire, 3000);
 
-    // ceaseFire({
-    //     ignoreTargets: {
-    //         mousemove: ['.target1', '.target2'], 
-    //         'dblclick:click': '#target3' 
-    //     },
-    //     removeEvents: ['dblclick:click', 'mousemove']
-    // });
+    ceaseFire({
+        ignoreSuspects: {
+            mousemove: ['.target1', '.target2'], 
+            'dblclick:click': '#target3' 
+        },
+        removeEvents: ['dblclick:click', 'mousemove']
+    });
 
     
     </script>

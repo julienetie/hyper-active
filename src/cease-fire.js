@@ -1,38 +1,51 @@
 import storage from './storage';
 import isPlaneObject from '../libs/is-plane-object';
-import { newError } from './helpers';
+import { newError, hasProperty } from './helpers';
 
-const notAnArray = 'ignoreTargets should be an Array';
+const notAnArray = 'ignoreSuspects should be an Array';
 
-const ceaseFire = (ceaseFireOptions) => {
-    if (ceaseFireOptions.hasOwnProperty('ignoreTargets')) {
-        if (isPlaneObject(ceaseFireOptions.ignoreTargets)) {
-            Object.keys(ceaseFireOptions.ignoreTargets)
-                .map(eventSetNamesOfignored => {
 
-                    if (!storage.hasOwnProperty('ignoreTargets')) {
-                        storage.ignoreTargets = {};
-                    }
 
-                    const ignoredValue = ceaseFireOptions.ignoreTargets[eventSetNamesOfignored];
-                    const ignoredValueArray = Array.isArray(ignoredValue) ? ignoredValue : [ignoredValue];
-                    storage.ignoreTargets[eventSetNamesOfignored] = ignoredValueArray;
-                })
+/**
+ * API for removing events and ignoring suspects.
+ *
+ *@param {Object} ceaseFireConfig - ceaseFire Options.
+ */
+const ceaseFire = (ceaseFireConfig) => {
+    // Ignore suspects
+    if (hasProperty(ceaseFireConfig, 'ignoreSuspects')) {
+        if (isPlaneObject(ceaseFireConfig.ignoreSuspects)) {
+            Object.keys(ceaseFireConfig.ignoreSuspects)
+                .map(suspectToIgnore => {
+                    const ignoredValue = ceaseFireConfig.ignoreSuspects[
+                        suspectToIgnore
+                    ];
+                    const ignoredValueArray = Array
+                        .isArray(ignoredValue) ? ignoredValue : [ignoredValue];
+
+                    // Add suspect to ignoreSuspects.
+                    storage.ignoreSuspects[
+                        suspectToIgnore
+                    ] = ignoredValueArray;
+                });
         } else {
             newError(notAnArray);
         }
     }
-    console.log('storage', storage)
-    if (ceaseFireOptions.hasOwnProperty('removeEvents')) {
-        if (Array.isArray(ceaseFireOptions.removeEvents)) {
+
+    // Remove Events.
+    if (hasProperty(ceaseFireConfig, 'removeEvents')) {
+        if (Array.isArray(ceaseFireConfig.removeEvents)) {
             storage.attachedEvents = storage.attachedEvents.filter(eventDetails => {
-                const hasEventToRemove = ceaseFireOptions.removeEvents.some(eventToRemove => eventToRemove === eventDetails.identity);
-               
+                const hasEventToRemove = ceaseFireConfig.removeEvents.some(
+                    eventToRemove => eventToRemove === eventDetails.identity);
+
                 if (hasEventToRemove) {
+                    // Remove Event.
                     eventDetails.removeEvent();
-                } else {
-                    return eventDetails;
+                    return false;
                 }
+                return true;
             });
         } else {
             newError(notAnArray);

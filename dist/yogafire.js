@@ -105,14 +105,10 @@ var isPlaneObject = (function (value) {
 });
 
 var storage = {
-	attachedEvents: null
+	attachedEvents: null,
+	ignoreSuspects: {}
 };
 
-/**
- * Attaches event listeners according to event discriptions.
- *
- * @param {Array} eventDescriptions - Event listener descriptions to be attached to the document.
- */
 var addEventListeners = (function (eventDescriptions) {
     /** 
      * Checks if a tagName exist within suspects.
@@ -129,17 +125,17 @@ var addEventListeners = (function (eventDescriptions) {
      * 
      * @param {Object} e - The event object.
      * @param {Array} suspects - The possible targets.
-     * @param {Function} action - The API handler value. 
+     * @param {Function} eventSetName - The fireConfig property name. 
      */
-    var isTarget = function isTarget(e, suspects, identity) {
+    var isTarget = function isTarget(e, suspects, eventSetName) {
         var target = e.target;
 
-        // Check if there are suspects to ignore.
-        var hasSuspectsToIgnore = storage.ignoreTargets.hasOwnProperty(identity);
+        // Check for suspects ot ignore.
+        var hasSuspectsToIgnore = storage.ignoreSuspects.hasOwnProperty(eventSetName);
         var vettedSuspects = void 0;
 
         if (hasSuspectsToIgnore) {
-            var suspectsToIgnore = storage.ignoreTargets[identity];
+            var suspectsToIgnore = storage.ignoreSuspects[eventSetName];
             vettedSuspects = suspects.filter(function (suspect) {
                 return !suspectsToIgnore.includes(suspect);
             });
@@ -147,6 +143,7 @@ var addEventListeners = (function (eventDescriptions) {
             vettedSuspects = suspects;
         }
 
+        // Removes class and id prefixes.
         var cleanSuspects = vettedSuspects.map(function (suspect) {
             return suspect.replace('.', '').replace('#', '');
         });
@@ -179,54 +176,70 @@ var addEventListeners = (function (eventDescriptions) {
         /*@TODO Throw error */
     };
 
-    var resolvedEvents = eventDescriptions.map(function (_ref, index) {
+    var attachedEvent = eventDescriptions.map(function (_ref, index) {
         var eventType = _ref.eventType,
-            targets = _ref.targets,
-            action = _ref.action,
-            identity = _ref.identity;
+            suspects = _ref.suspects,
+            handler = _ref.handler,
+            eventSetName = _ref.eventSetName;
 
-        var handler = function handler(e) {
 
-            if (isTarget(e, targets, identity)) {
-                action(e);
+        var handlerWrapper = function handlerWrapper(e) {
+            if (isTarget(e, suspects, eventSetName)) {
+                handler(e, e.target);
             }
         };
+
         var addEvent = function addEvent() {
-            return document.addEventListener(eventType, handler, false);
+            return document.addEventListener(eventType, handlerWrapper, false);
         };
         addEvent();
         var removeEvent = function removeEvent() {
-            return document.removeEventListener(eventType, handler, false);
+            return document.removeEventListener(eventType, handlerWrapper, false);
         };
 
         return {
             eventType: eventType,
-            targets: targets,
-            handler: action,
+            suspects: suspects,
+            handler: handler,
             useCapture: false,
-            identity: identity,
+            eventSetName: eventSetName,
             index: index,
             addEvent: addEvent,
             removeEvent: removeEvent
         };
     });
 
-    storage.attachedEvents = resolvedEvents;
+    // Share attached events between modules.
+    storage.attachedEvents = attachedEvent;
 });
 
 var isString = function isString(value) {
-  return typeof value === 'string';
+    return typeof value === 'string';
 };
 
 
 var isElement = function isElement(value) {
-  return value instanceof window.Element;
+    return value instanceof window.Element;
 };
 var getElement = function getElement(selector) {
-  return document.querySelector(selector);
+    return document.querySelector(selector);
 };
 var newError = function newError(message) {
-  throw new Error(message);
+    throw new Error(message);
+};
+var once = true;
+var notice = function notice(message, style) {
+    if (once) {
+        console.log(message, style);
+        once = false;
+    }
+};
+var hasProperty = function hasProperty(obj, property) {
+    return !!Object.getOwnPropertyDescriptor(obj, property);
+};
+var error$1 = function error(value, parameter, linkHash) {
+    notice('%c :: yogafire ::', 'color: #999;');
+    throw new Error('"' + value + '" is invalid, see ' + parameter + ' \n\uD83D\uDD17 https://github.com/julienetie/yogafire/wiki/Docs' + linkHash + '\n');
 };
 
 var documentErrorMessage = 'Use an object parameter for global delegation.';
@@ -277,99 +290,129 @@ var singleEvents = (function (targetElements) {
     return elements.length === 1 ? singleCeaseFires[0] : singleCeaseFires;
 });
 
-var firePartial = function firePartial() {
-    var actionsIndexReference = [];
-    var actionsReference = [];
-    var targetsIndexReference = [];
-    var targetsReference = [];
+var fireEnclosing = function fireEnclosing() {
+    var handlerLinkingList = [];
+    var handlerList = [];
+    var eventSetNameList = [];
+    var suspectsList = [];
 
-    return function (eventsObject) {
-        for (var _len = arguments.length, singleParams = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-            singleParams[_key - 1] = arguments[_key];
-        }
-
-        if (!isPlaneObject(eventsObject)) {
-            return singleEvents.apply(undefined, [eventsObject].concat(singleParams));
-        }
-        var eventsObjectKeys = Object.keys(eventsObject);
-
-        var eventListenersMulti = eventsObjectKeys.map(function (eventTypes, i) {
-            var _eventsObject$eventTy = eventsObject[eventTypes],
-                target = _eventsObject$eventTy.target,
-                targets = _eventsObject$eventTy.targets,
-                action = _eventsObject$eventTy.action;
-
-            var eventsGroupTargets = targets || target;
-            var actionCopy = void 0;
-
-            if (typeof action === 'function') {
-                actionsIndexReference.push(eventTypes);
-                actionsReference.push(action);
-                actionCopy = action;
-            } else {
-                actionCopy = actionsReference[actionsIndexReference.indexOf(action)];
+    /** 
+     * The fire API.
+     *
+     * @param {Object|string}
+     * @param {string}
+     * @param {Function}
+     * @param {Boolean| Object}
+     */
+    return function fire(fireConfig) {
+        // Check if usage requires fireConfig or singleEvent API.
+        if (!isPlaneObject(fireConfig)) {
+            for (var _len = arguments.length, singleParams = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+                singleParams[_key - 1] = arguments[_key];
             }
 
-            targetsIndexReference.push(eventTypes);
-            targetsReference.push(eventsGroupTargets);
+            return singleEvents.apply(undefined, [fireConfig].concat(singleParams));
+        }
 
-            var targetsIndex = targetsIndexReference.indexOf(eventsGroupTargets);
-            var targetsCopy = targetsIndex >= 0 ? targetsReference[targetsIndex] : eventsGroupTargets;
+        // Process each eventSet.
+        var eventsObjectKeys = Object.keys(fireConfig);
+        var eventListeners2d = eventsObjectKeys.map(function (eventSetName, i) {
+            var _fireConfig$eventSetN = fireConfig[eventSetName],
+                suspect = _fireConfig$eventSetN.suspect,
+                suspects = _fireConfig$eventSetN.suspects,
+                handler = _fireConfig$eventSetN.handler;
 
-            return eventTypes.split(':').map(function (eventType) {
+            // Treats suspects and suspect synonomously.
+
+            var suspectsSynonomous = suspects || suspect;
+            var resolvedHandler = void 0;
+
+            var isSuspectsValid = [isElement(suspectsSynonomous), isString(suspectsSynonomous), Array.isArray(suspectsSynonomous)].some(function (typeCheckValue) {
+                return typeCheckValue;
+            });
+
+            console.log('isSuspectsValid', isSuspectsValid);
+            if (!isSuspectsValid) {
+                error$1(suspectsSynonomous, 'suspect|suspects', '*#suspect');
+            }
+
+            if (typeof handler === 'function') {
+                // Add eventSetNames as pre-existing properties for linkage.
+                handlerLinkingList.push(eventSetName);
+                handlerList.push(handler);
+                resolvedHandler = handler;
+            } else {
+                // Checks for handleLink.
+                resolvedHandler = handlerList[handlerLinkingList.indexOf(handler)];
+            }
+
+            eventSetNameList.push(eventSetName);
+            suspectsList.push(suspectsSynonomous);
+
+            var isSuspectsLinkIndex = eventSetNameList.indexOf(suspectsSynonomous);
+
+            // Checks for suspectsLink.
+            var resolvedSuspects = isSuspectsLinkIndex >= 0 ? suspectsList[isSuspectsLinkIndex] : suspectsSynonomous;
+
+            return eventSetName.split(':').map(function (eventType) {
                 return {
                     eventType: eventType,
-                    targets: isString(targetsCopy) ? [targetsCopy] : targetsCopy,
-                    action: actionCopy,
-                    identity: eventsObjectKeys[i]
+                    suspects: isString(resolvedSuspects) ? [resolvedSuspects] : resolvedSuspects,
+                    handler: resolvedHandler,
+                    eventSetName: eventSetName
                 };
             });
         });
 
-        var eventListeners = eventListenersMulti.reduce(function (a, b) {
+        // Flattern event listeners.
+        var eventListeners = eventListeners2d.reduce(function (a, b) {
             return a.concat(b);
         }, []);
 
-        // attachedEvents.push(eventListeners);
-
+        // Set up event listeners for delegation. 
         addEventListeners(eventListeners);
     };
 };
 
-var fire = firePartial();
+var fire = fireEnclosing();
 
-var notAnArray = 'ignoreTargets should be an Array';
+var notAnArray = 'ignoreSuspects should be an Array';
 
-var ceaseFire = function ceaseFire(ceaseFireOptions) {
-    if (ceaseFireOptions.hasOwnProperty('ignoreTargets')) {
-        if (isPlaneObject(ceaseFireOptions.ignoreTargets)) {
-            Object.keys(ceaseFireOptions.ignoreTargets).map(function (eventSetNamesOfignored) {
-
-                if (!storage.hasOwnProperty('ignoreTargets')) {
-                    storage.ignoreTargets = {};
-                }
-
-                var ignoredValue = ceaseFireOptions.ignoreTargets[eventSetNamesOfignored];
+/**
+ * API for removing events and ignoring suspects.
+ *
+ *@param {Object} ceaseFireConfig - ceaseFire Options.
+ */
+var ceaseFire = function ceaseFire(ceaseFireConfig) {
+    // Ignore suspects
+    if (hasProperty(ceaseFireConfig, 'ignoreSuspects')) {
+        if (isPlaneObject(ceaseFireConfig.ignoreSuspects)) {
+            Object.keys(ceaseFireConfig.ignoreSuspects).map(function (suspectToIgnore) {
+                var ignoredValue = ceaseFireConfig.ignoreSuspects[suspectToIgnore];
                 var ignoredValueArray = Array.isArray(ignoredValue) ? ignoredValue : [ignoredValue];
-                storage.ignoreTargets[eventSetNamesOfignored] = ignoredValueArray;
+
+                // Add suspect to ignoreSuspects.
+                storage.ignoreSuspects[suspectToIgnore] = ignoredValueArray;
             });
         } else {
             newError(notAnArray);
         }
     }
-    console.log('storage', storage);
-    if (ceaseFireOptions.hasOwnProperty('removeEvents')) {
-        if (Array.isArray(ceaseFireOptions.removeEvents)) {
+
+    // Remove Events.
+    if (hasProperty(ceaseFireConfig, 'removeEvents')) {
+        if (Array.isArray(ceaseFireConfig.removeEvents)) {
             storage.attachedEvents = storage.attachedEvents.filter(function (eventDetails) {
-                var hasEventToRemove = ceaseFireOptions.removeEvents.some(function (eventToRemove) {
+                var hasEventToRemove = ceaseFireConfig.removeEvents.some(function (eventToRemove) {
                     return eventToRemove === eventDetails.identity;
                 });
 
                 if (hasEventToRemove) {
+                    // Remove Event.
                     eventDetails.removeEvent();
-                } else {
-                    return eventDetails;
+                    return false;
                 }
+                return true;
             });
         } else {
             newError(notAnArray);

@@ -1,68 +1,105 @@
 import isPlaneObject from '../libs/is-plane-object';
 import addEventListeners from './add-event-listeners';
-import { isString } from './helpers';
+import { isString, isElement, error } from './helpers';
 import singleEvents from './single-events';
 
-const firePartial = () => {
-    const actionsIndexReference = [];
-    const actionsReference = [];
-    const targetsIndexReference = [];
-    const targetsReference = [];
+/**
+ * Enclosing function.
+ *
+ * @return {Function} fireEnclosing  - Contains lists.
+ */
+const fireEnclosing = () => {
+    const handlerLinkingList = [];
+    const handlerList = [];
+    const eventSetNameList = [];
+    const suspectsList = [];
 
-    return (
-        eventsObject,
+    /** 
+     * The fire API.
+     *
+     * @param {Object|string}
+     * @param {string}
+     * @param {Function}
+     * @param {Boolean| Object}
+     */
+    return function fire(
+        fireConfig,
         ...singleParams
-    ) => {
-        if (!isPlaneObject(eventsObject)) {
-            return singleEvents(eventsObject, ...singleParams);
+    ) {
+        // Check if usage requires fireConfig or singleEvent API.
+        if (!isPlaneObject(fireConfig)) {
+            return singleEvents(fireConfig, ...singleParams);
         }
-        const eventsObjectKeys = Object.keys(eventsObject);
 
-        const eventListenersMulti = eventsObjectKeys
-            .map((eventTypes, i) => {
-                const { target, targets, action } = eventsObject[
-                    eventTypes
+        // Process each eventSet.
+        const eventsObjectKeys = Object.keys(fireConfig);
+        const eventListeners2d = eventsObjectKeys
+            .map((eventSetName, i) => {
+                const { suspect, suspects, handler } = fireConfig[
+                    eventSetName
                 ];
-                const eventsGroupTargets = targets || target;
-                let actionCopy;
 
-                if (typeof action === 'function') {
-                    actionsIndexReference.push(eventTypes);
-                    actionsReference.push(action);
-                    actionCopy = action;
+                // Treats suspects and suspect synonomously.
+                const suspectsSynonomous = suspects || suspect;
+                let resolvedHandler;
+
+
+                const isSuspectsValid = [
+                    isElement(suspectsSynonomous),
+                    isString(suspectsSynonomous),
+                    Array.isArray(suspectsSynonomous)
+                ]
+                .some(typeCheckValue => typeCheckValue)
+
+                console.log('isSuspectsValid', isSuspectsValid)
+                if(!isSuspectsValid){
+                    error(suspectsSynonomous, 'suspect|suspects', '*#suspect');
+                }
+
+                if (typeof handler === 'function') {
+                    // Add eventSetNames as pre-existing properties for linkage.
+                    handlerLinkingList.push(eventSetName);
+                    handlerList.push(handler);
+                    resolvedHandler = handler;
                 } else {
-                    actionCopy = actionsReference[
-                        actionsIndexReference.indexOf(action)
+                    // Checks for handleLink.
+                    resolvedHandler = handlerList[
+                        handlerLinkingList.indexOf(handler)
                     ];
                 }
 
-                targetsIndexReference.push(eventTypes);
-                targetsReference.push(eventsGroupTargets);
+                eventSetNameList.push(eventSetName);
+                suspectsList.push(suspectsSynonomous);
 
-                const targetsIndex = targetsIndexReference
-                    .indexOf(eventsGroupTargets);
-                const targetsCopy = targetsIndex >= 0 ? targetsReference[
-                    targetsIndex
-                ] : eventsGroupTargets;
+                const isSuspectsLinkIndex = eventSetNameList
+                    .indexOf(suspectsSynonomous);
 
-                return eventTypes.split(':')
-                    .map(eventType => ({
-                        eventType,
-                        targets: isString(targetsCopy) ? [
-                            targetsCopy,
-                        ] : targetsCopy,
-                        action: actionCopy,
-                        identity: eventsObjectKeys[i]
-                    }));
+                // Checks for suspectsLink.
+                const resolvedSuspects = isSuspectsLinkIndex >= 0 ? suspectsList[
+                    isSuspectsLinkIndex
+                ] : suspectsSynonomous;
+
+                return eventSetName.split(':')
+                    .map(eventType =>
+                        ({
+                            eventType,
+                            suspects: isString(resolvedSuspects) ? [
+                                resolvedSuspects,
+                            ] : resolvedSuspects,
+                            handler: resolvedHandler,
+                            eventSetName
+                        })
+                    );
             });
 
-        const eventListeners = eventListenersMulti
-            .reduce((a, b) => a.concat(b), []);
+        // Flattern event listeners.
+        const eventListeners = eventListeners2d.reduce(
+            (a, b) => a.concat(b), []
+        );
 
-        // attachedEvents.push(eventListeners);
-
+        // Set up event listeners for delegation. 
         addEventListeners(eventListeners);
     };
 };
 
-export default firePartial();
+export default fireEnclosing();
