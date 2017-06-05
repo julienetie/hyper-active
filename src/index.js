@@ -6,6 +6,6 @@ import ceaseFire from './cease-fire';
  */
 export {
     fire,
-    ceaseFire,
+    ceaseFire
 };
 

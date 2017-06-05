@@ -5,13 +5,12 @@ import { newError, hasProperty } from './helpers';
 const notAnArray = 'ignoreSuspects should be an Array';
 
 
-
 /**
  * API for removing events and ignoring suspects.
  *
- *@param {Object} ceaseFireConfig - ceaseFire Options.
+ * @param {Object} ceaseFireConfig - Cease-fire Options.
  */
-const ceaseFire = (ceaseFireConfig) => {
+const ceaseFire = ceaseFireConfig => {
     // Ignore suspects
     if (hasProperty(ceaseFireConfig, 'ignoreSuspects')) {
         if (isPlaneObject(ceaseFireConfig.ignoreSuspects)) {
@@ -27,6 +26,9 @@ const ceaseFire = (ceaseFireConfig) => {
                     storage.ignoreSuspects[
                         suspectToIgnore
                     ] = ignoredValueArray;
+
+                    // @todo Doing nothing.
+                    return suspectToIgnore;
                 });
         } else {
             newError(notAnArray);
@@ -45,6 +47,7 @@ const ceaseFire = (ceaseFireConfig) => {
                     eventDetails.removeEvent();
                     return false;
                 }
+                // @todo Doing nothing.
                 return true;
             });
         } else {

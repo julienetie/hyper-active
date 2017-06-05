@@ -1,33 +1,34 @@
 import storage from './storage';
+import { error, hasProperty, isString } from './helpers';
 
 /**
  * Attaches event listeners according to event discriptions.
  *
  * @param {Array} eventDescriptions - Event listener descriptions to be attached to the document.
- */            
+ */
 export default eventDescriptions => {
-    /** 
+    /**
      * Checks if a tagName exist within suspects.
      *
-     * @param {} cleanSuspects - suspects with removed prefixes. 
-     * @param {String} tagName - target tagName.
+     * @param {Array} cleanSuspects - Suspects with removed prefixes.
+     * @param {string} tagName - Target tagName.
      */
     const checkTagName = (cleanSuspects, tagName) => cleanSuspects.includes(tagName);
 
 
     /**
-     * isTarget manages suspects, targets and the storage.ignoredTargets data.
-     * 
+     * Manages suspects, targets and the storage.ignoredTargets data.
+     *
      * @param {Object} e - The event object.
      * @param {Array} suspects - The possible targets.
-     * @param {Function} eventSetName - The fireConfig property name. 
+     * @param {Function} eventSetName - The fireConfig property name.
      */
     const isTarget = (e, suspects, eventSetName) => {
         const target = e.target;
+        const targetClassName = target.className;
 
         // Check for suspects ot ignore.
-        const hasSuspectsToIgnore = storage.ignoreSuspects
-            .hasOwnProperty(eventSetName);
+        const hasSuspectsToIgnore = hasProperty(storage.ignoreSuspects, eventSetName);
         let vettedSuspects;
 
         if (hasSuspectsToIgnore) {
@@ -47,37 +48,25 @@ export default eventDescriptions => {
         // Id match.
         if (cleanSuspects.includes(target.id)) {
             return true;
-
             // Class match.
-        } else if (target.className) {
+        } else if (targetClassName) {
             const hasClass = cleanSuspects
-                .filter(suspect => target
-                    .className
-                    .includes(suspect)
-                ).length > 0;
-
+                .filter(suspect => targetClassName.includes(suspect)).length > 0;
             if (hasClass) {
                 return true;
-            } else {
-
-                // TagName match.
-                return checkTagName(cleanSuspects, target.tagName);
             }
-
-            /*@TODO Throw error */
-        } else {
-
-            // TagName match.
             return checkTagName(cleanSuspects, target.tagName);
         }
-
-        /*@TODO Throw error */
+        return checkTagName(cleanSuspects, target.tagName);
     };
 
 
     const attachedEvent = eventDescriptions
         .map(({ eventType, suspects, handler, eventSetName }, index) => {
-            
+            if (!isString(eventType)) {
+                error(eventType, 'eventType', '*#eventType');
+            }
+
             const handlerWrapper = e => {
                 if (isTarget(e, suspects, eventSetName)) {
                     handler(e, e.target);
@@ -87,7 +76,9 @@ export default eventDescriptions => {
             const addEvent = () => document.addEventListener(
                 eventType, handlerWrapper, false
             );
+
             addEvent();
+
             const removeEvent = () => document.removeEventListener(
                 eventType, handlerWrapper, false
             );
@@ -100,10 +91,9 @@ export default eventDescriptions => {
                 eventSetName,
                 index,
                 addEvent,
-                removeEvent,
+                removeEvent
             };
         });
-
     // Share attached events between modules.
     storage.attachedEvents = attachedEvent;
 };

@@ -9,10 +9,11 @@ export const newError = message => {
 let once = true;
 const notice = (message, style) => {
     if (once) {
+        // eslint-disable-next-line
         console.log(message, style);
         once = false;
     }
-}
+};
 export const hasProperty = (obj, property) => !!Object.getOwnPropertyDescriptor(obj, property);
 export const error = (value, parameter, linkHash) => {
     notice('%c :: yogafire ::', 'color: #999;');

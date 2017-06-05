@@ -1,5 +1,2 @@
-const storage = {
-	attachedEvents: null,
-	ignoreSuspects: {}
-};
+const storage = { attachedEvents: null, ignoreSuspects: {} };
 export default storage;

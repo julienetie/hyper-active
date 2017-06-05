@@ -104,34 +104,69 @@ var isPlaneObject = (function (value) {
     return true;
 });
 
-var storage = {
-	attachedEvents: null,
-	ignoreSuspects: {}
+var storage = { attachedEvents: null, ignoreSuspects: {} };
+
+var isString = function isString(value) {
+    return typeof value === 'string';
 };
 
+var isFunction = function isFunction(value) {
+    return typeof value === 'function';
+};
+var isElement = function isElement(value) {
+    return value instanceof window.Element;
+};
+var getElement = function getElement(selector) {
+    return document.querySelector(selector);
+};
+var newError = function newError(message) {
+    throw new Error(message);
+};
+var once = true;
+var notice = function notice(message, style) {
+    if (once) {
+        // eslint-disable-next-line
+        console.log(message, style);
+        once = false;
+    }
+};
+var hasProperty = function hasProperty(obj, property) {
+    return !!Object.getOwnPropertyDescriptor(obj, property);
+};
+var error$1 = function error(value, parameter, linkHash) {
+    notice('%c :: yogafire ::', 'color: #999;');
+    throw new Error('"' + value + '" is invalid, see ' + parameter + ' \n\uD83D\uDD17 https://github.com/julienetie/yogafire/wiki/Docs' + linkHash + '\n');
+};
+
+/**
+ * Attaches event listeners according to event discriptions.
+ *
+ * @param {Array} eventDescriptions - Event listener descriptions to be attached to the document.
+ */
 var addEventListeners = (function (eventDescriptions) {
-    /** 
+    /**
      * Checks if a tagName exist within suspects.
      *
-     * @param {} cleanSuspects - suspects with removed prefixes. 
-     * @param {String} tagName - target tagName.
+     * @param {Array} cleanSuspects - Suspects with removed prefixes.
+     * @param {string} tagName - Target tagName.
      */
     var checkTagName = function checkTagName(cleanSuspects, tagName) {
         return cleanSuspects.includes(tagName);
     };
 
     /**
-     * isTarget manages suspects, targets and the storage.ignoredTargets data.
-     * 
+     * Manages suspects, targets and the storage.ignoredTargets data.
+     *
      * @param {Object} e - The event object.
      * @param {Array} suspects - The possible targets.
-     * @param {Function} eventSetName - The fireConfig property name. 
+     * @param {Function} eventSetName - The fireConfig property name.
      */
     var isTarget = function isTarget(e, suspects, eventSetName) {
         var target = e.target;
+        var targetClassName = target.className;
 
         // Check for suspects ot ignore.
-        var hasSuspectsToIgnore = storage.ignoreSuspects.hasOwnProperty(eventSetName);
+        var hasSuspectsToIgnore = hasProperty(storage.ignoreSuspects, eventSetName);
         var vettedSuspects = void 0;
 
         if (hasSuspectsToIgnore) {
@@ -151,29 +186,17 @@ var addEventListeners = (function (eventDescriptions) {
         // Id match.
         if (cleanSuspects.includes(target.id)) {
             return true;
-
             // Class match.
-        } else if (target.className) {
+        } else if (targetClassName) {
             var hasClass = cleanSuspects.filter(function (suspect) {
-                return target.className.includes(suspect);
+                return targetClassName.includes(suspect);
             }).length > 0;
-
             if (hasClass) {
                 return true;
-            } else {
-
-                // TagName match.
-                return checkTagName(cleanSuspects, target.tagName);
             }
-
-            /*@TODO Throw error */
-        } else {
-
-            // TagName match.
             return checkTagName(cleanSuspects, target.tagName);
         }
-
-        /*@TODO Throw error */
+        return checkTagName(cleanSuspects, target.tagName);
     };
 
     var attachedEvent = eventDescriptions.map(function (_ref, index) {
@@ -182,6 +205,9 @@ var addEventListeners = (function (eventDescriptions) {
             handler = _ref.handler,
             eventSetName = _ref.eventSetName;
 
+        if (!isString(eventType)) {
+            error$1(eventType, 'eventType', '*#eventType');
+        }
 
         var handlerWrapper = function handlerWrapper(e) {
             if (isTarget(e, suspects, eventSetName)) {
@@ -192,7 +218,9 @@ var addEventListeners = (function (eventDescriptions) {
         var addEvent = function addEvent() {
             return document.addEventListener(eventType, handlerWrapper, false);
         };
+
         addEvent();
+
         var removeEvent = function removeEvent() {
             return document.removeEventListener(eventType, handlerWrapper, false);
         };
@@ -208,39 +236,9 @@ var addEventListeners = (function (eventDescriptions) {
             removeEvent: removeEvent
         };
     });
-
     // Share attached events between modules.
     storage.attachedEvents = attachedEvent;
 });
-
-var isString = function isString(value) {
-    return typeof value === 'string';
-};
-
-
-var isElement = function isElement(value) {
-    return value instanceof window.Element;
-};
-var getElement = function getElement(selector) {
-    return document.querySelector(selector);
-};
-var newError = function newError(message) {
-    throw new Error(message);
-};
-var once = true;
-var notice = function notice(message, style) {
-    if (once) {
-        console.log(message, style);
-        once = false;
-    }
-};
-var hasProperty = function hasProperty(obj, property) {
-    return !!Object.getOwnPropertyDescriptor(obj, property);
-};
-var error$1 = function error(value, parameter, linkHash) {
-    notice('%c :: yogafire ::', 'color: #999;');
-    throw new Error('"' + value + '" is invalid, see ' + parameter + ' \n\uD83D\uDD17 https://github.com/julienetie/yogafire/wiki/Docs' + linkHash + '\n');
-};
 
 var documentErrorMessage = 'Use an object parameter for global delegation.';
 
@@ -290,19 +288,24 @@ var singleEvents = (function (targetElements) {
     return elements.length === 1 ? singleCeaseFires[0] : singleCeaseFires;
 });
 
+/**
+ * Enclosing function.
+ *
+ * @returns {Function} List of event details.
+ */
 var fireEnclosing = function fireEnclosing() {
     var handlerLinkingList = [];
     var handlerList = [];
     var eventSetNameList = [];
     var suspectsList = [];
 
-    /** 
+    /**
      * The fire API.
      *
-     * @param {Object|string}
-     * @param {string}
-     * @param {Function}
-     * @param {Boolean| Object}
+     * @param {Object|string|Element| Array} fireConfig - The event delegation
+     * config or first parameter for singleEvents.
+     * @param {Array} singleParams - Event type, handler and use capture
+     * parameters for singleEvents.
      */
     return function fire(fireConfig) {
         // Check if usage requires fireConfig or singleEvent API.
@@ -316,12 +319,11 @@ var fireEnclosing = function fireEnclosing() {
 
         // Process each eventSet.
         var eventsObjectKeys = Object.keys(fireConfig);
-        var eventListeners2d = eventsObjectKeys.map(function (eventSetName, i) {
+        var eventListeners2d = eventsObjectKeys.map(function (eventSetName) {
             var _fireConfig$eventSetN = fireConfig[eventSetName],
                 suspect = _fireConfig$eventSetN.suspect,
                 suspects = _fireConfig$eventSetN.suspects,
                 handler = _fireConfig$eventSetN.handler;
-
             // Treats suspects and suspect synonomously.
 
             var suspectsSynonomous = suspects || suspect;
@@ -331,19 +333,21 @@ var fireEnclosing = function fireEnclosing() {
                 return typeCheckValue;
             });
 
-            console.log('isSuspectsValid', isSuspectsValid);
             if (!isSuspectsValid) {
                 error$1(suspectsSynonomous, 'suspect|suspects', '*#suspect');
             }
 
-            if (typeof handler === 'function') {
+            if (isFunction(handler)) {
                 // Add eventSetNames as pre-existing properties for linkage.
                 handlerLinkingList.push(eventSetName);
                 handlerList.push(handler);
                 resolvedHandler = handler;
-            } else {
+            } else if (isString(handler)) {
                 // Checks for handleLink.
-                resolvedHandler = handlerList[handlerLinkingList.indexOf(handler)];
+                var handlerLinkIndex = handlerLinkingList.indexOf(handler);
+                resolvedHandler = handlerList[handlerLinkIndex];
+            } else {
+                error$1(suspectsSynonomous, 'handler', '*#handler');
             }
 
             eventSetNameList.push(eventSetName);
@@ -355,9 +359,10 @@ var fireEnclosing = function fireEnclosing() {
             var resolvedSuspects = isSuspectsLinkIndex >= 0 ? suspectsList[isSuspectsLinkIndex] : suspectsSynonomous;
 
             return eventSetName.split(':').map(function (eventType) {
+                var wrappedSuspects = isString(resolvedSuspects) ? [resolvedSuspects] : resolvedSuspects;
                 return {
                     eventType: eventType,
-                    suspects: isString(resolvedSuspects) ? [resolvedSuspects] : resolvedSuspects,
+                    suspects: wrappedSuspects,
                     handler: resolvedHandler,
                     eventSetName: eventSetName
                 };
@@ -369,8 +374,8 @@ var fireEnclosing = function fireEnclosing() {
             return a.concat(b);
         }, []);
 
-        // Set up event listeners for delegation. 
-        addEventListeners(eventListeners);
+        // Set up event listeners for delegation.
+        return addEventListeners(eventListeners);
     };
 };
 
@@ -381,7 +386,7 @@ var notAnArray = 'ignoreSuspects should be an Array';
 /**
  * API for removing events and ignoring suspects.
  *
- *@param {Object} ceaseFireConfig - ceaseFire Options.
+ * @param {Object} ceaseFireConfig - Cease-fire Options.
  */
 var ceaseFire = function ceaseFire(ceaseFireConfig) {
     // Ignore suspects
@@ -393,6 +398,9 @@ var ceaseFire = function ceaseFire(ceaseFireConfig) {
 
                 // Add suspect to ignoreSuspects.
                 storage.ignoreSuspects[suspectToIgnore] = ignoredValueArray;
+
+                // @todo Doing nothing.
+                return suspectToIgnore;
             });
         } else {
             newError(notAnArray);
@@ -412,6 +420,7 @@ var ceaseFire = function ceaseFire(ceaseFireConfig) {
                     eventDetails.removeEvent();
                     return false;
                 }
+                // @todo Doing nothing.
                 return true;
             });
         } else {

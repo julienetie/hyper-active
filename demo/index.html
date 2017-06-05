@@ -75,7 +75,7 @@
             handler: clickMouseoverAction
         },
         'dblclick:click': {
-            suspect: 325235,
+            suspect: '#target3',
             handler: 'mousemove'
         }
     });
@@ -86,13 +86,13 @@
 
     setTimeout(singleCeaseFire, 3000);
 
-    ceaseFire({
-        ignoreSuspects: {
-            mousemove: ['.target1', '.target2'], 
-            'dblclick:click': '#target3' 
-        },
-        removeEvents: ['dblclick:click', 'mousemove']
-    });
+    // ceaseFire({
+    //     ignoreSuspects: {
+    //         mousemove: ['.target1', '.target2'], 
+    //         'dblclick:click': '#target3' 
+    //     },
+    //     removeEvents: ['dblclick:click', 'mousemove']
+    // });
 
     
     </script>
