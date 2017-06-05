@@ -1,9 +1,9 @@
 {
   "name": "yogafire",
-  "version": "0.0.6",
-  "description": "Advanced Event Delegation",
-  "main": "dist/yogafire.js",
-  "jsnext:main": "dist/yogafire.es.js",
+  "version": "0.1.0",
+  "description": "A Flexible Event Delegation System",
+  "main": "dist/es5/yogafire.umd.js",
+  "jsnext:main": "dist/yogafire.js",
   "scripts": {
     "build": "rollup -c ./rollup/config.es.js && rollup -c ./rollup/config.umd.js ",
     "test": "tape -r babel-register ./test/**/**.js | faucet",

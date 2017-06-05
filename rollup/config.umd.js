@@ -19,5 +19,5 @@ export default {
 		commonjs()
 	],
 	format: 'umd',
-	dest: './dist/yogafire.js'
+	dest: './dist/es5/yogafire.umd.js'
 };

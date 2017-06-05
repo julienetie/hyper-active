@@ -15,5 +15,5 @@ export default {
 		})
 	],
 	format: 'es',
-	dest: './dist/yogafire.es.js'
+	dest: './dist/yogafire.js'
 };
