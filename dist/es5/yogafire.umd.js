@@ -308,6 +308,11 @@ var fireEnclosing = function fireEnclosing() {
      * parameters for singleEvents.
      */
     return function fire(fireConfig) {
+        // Ensure fireConfig is defined.
+        if (fireConfig === undefined) {
+            error$1(fireConfig, 'fireConfig', '*#fireConfig');
+        }
+
         // Check if usage requires fireConfig or singleEvent API.
         if (!isPlaneObject(fireConfig)) {
             for (var _len = arguments.length, singleParams = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {

@@ -51,40 +51,40 @@
     <div id='target3'>
         TEST 3
     </div>
-    <script src="../dist/yogafire.js"></script>
+    <script src="../dist/es5/yogafire.umd.js"></script>
     <script>
     const {
         fire,
         ceaseFire
     } = yogaFire;
 
+    fire();
+    // function clickMouseoverAction(e) {
+    //     console.log('clickMouseoverAction', e.target, e.type);
+    // };
 
-    function clickMouseoverAction(e) {
-        console.log('clickMouseoverAction', e.target, e.type);
-    };
-
-    function blurMousedownAction(e) {
-        console.log('blurMousedownAction', e.target, e.type);
-    };
+    // function blurMousedownAction(e) {
+    //     console.log('blurMousedownAction', e.target, e.type);
+    // };
 
 
 
-    fire({
-        mousemove: {
-            suspects: ['.target1', '.target2'],
-            handler: clickMouseoverAction
-        },
-        'dblclick:click': {
-            suspect: '#target3',
-            handler: 'mousemove'
-        }
-    });
+    // fire({
+    //     mousemove: {
+    //         suspects: ['.target1', '.target2'],
+    //         handler: clickMouseoverAction
+    //     },
+    //     'dblclick:click': {
+    //         suspect: '#target3',
+    //         handler: 'mousemove'
+    //     }
+    // });
 
-    const singleEvent = e => console.log('Single *** Event' + e.target);
+    // const singleEvent = e => console.log('Single *** Event' + e.target);
 
-    const singleCeaseFire = fire('.target2', 'click', singleEvent, false);
+    // const singleCeaseFire = fire('.target2', 'click', singleEvent, false);
 
-    setTimeout(singleCeaseFire, 3000);
+    // setTimeout(singleCeaseFire, 3000);
 
     // ceaseFire({
     //     ignoreSuspects: {

@@ -193,6 +193,11 @@ const fireEnclosing = () => {
      * parameters for singleEvents.
      */
     return function fire(fireConfig, ...singleParams) {
+        // Ensure fireConfig is defined.
+        if (fireConfig === undefined) {
+            error(fireConfig, 'fireConfig', '*#fireConfig');
+        }
+
         // Check if usage requires fireConfig or singleEvent API.
         if (!isPlaneObject(fireConfig)) {
             return singleEvents(fireConfig, ...singleParams);

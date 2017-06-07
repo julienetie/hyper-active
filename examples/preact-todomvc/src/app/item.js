@@ -64,9 +64,8 @@ export default class TodoItem extends Component {
 						class="toggle"
 						type="checkbox"
 						checked={completed}
-						onChange={this.toggle}
 					/>
-					<label onDblClick={this.handleEdit}>{title}</label>
+					<label class="label" >{title}</label>
 					<button class="destroy" onClick={this.handleDestroy} />
 				</div>
 				{ editing && (
@@ -82,3 +81,6 @@ export default class TodoItem extends Component {
 		);
 	}
 }
+
+		// onChange={this.toggle}
+		//onDblClick={this.handleEdit}

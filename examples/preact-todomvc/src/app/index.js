@@ -2,6 +2,7 @@ import { h, Component } from 'preact';
 import TodoModel from './model';
 import TodoFooter from './footer';
 import TodoItem from './item';
+import events from './events';
 
 const ENTER_KEY = 13;
 
@@ -11,12 +12,15 @@ const FILTERS = {
 	completed: todo => todo.completed
 };
 
+
+
 export default class App extends Component {
 	constructor() {
 		super();
 		this.model = new TodoModel('preact-todos', () => this.setState({}) );
 		addEventListener('hashchange', this.handleRoute.bind(this));
 		this.handleRoute();
+		events(this)
 	}
 
 	handleRoute() {
@@ -82,8 +86,6 @@ export default class App extends Component {
 						class="new-todo"
 						placeholder="What needs to be done?"
 						value={newTodo}
-						onKeyDown={this.handleNewTodoKeyDown}
-						onInput={this.linkState('newTodo')}
 						autoFocus={true}
 					/>
 				</header>
@@ -93,8 +95,6 @@ export default class App extends Component {
 						<input
 							class="toggle-all"
 							type="checkbox"
-							onChange={this.toggleAll}
-							checked={activeTodoCount === 0}
 						/>
 						<ul class="todo-list">
 							{ shownTodos.map( todo => (
@@ -124,3 +124,7 @@ export default class App extends Component {
 		);
 	}
 }
+					// onKeyDown={this.handleNewTodoKeyDown}
+						// onInput={this.linkState('newTodo')}
+									// onChange={this.toggleAll}
+							// checked={activeTodoCount === 0}
