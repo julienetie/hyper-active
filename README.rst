@@ -81,23 +81,18 @@ Remove single events
 Details
 =======
 
-- [[No dependencies]]
-- [[7kb]]
-- [[Improve performance]] (ideal for mobile devices)
-- [[Significantly reduce event listener usage]]
-- [[Reduce or eliminate memory leaks]]
-- [[Improve maintainability of events]]
-- [[Improve life-cycle predictability of events]]
-- [[Provide delegation helper parameters to reduce conditional logic]]
-- [[provide a clean events removal system]]
+- No dependencies
+- 7kb minified
+- Improve performance (ideal for mobile devices)
+- Significantly reduce event listener usage
+- Reduce or eliminate memory leaks
+- Improve maintainability of events
+- Improve life-cycle predictability of events
+- Provide delegation helper parameters to reduce conditional logic
+- provide a clean events removal system
 - IE9+ support (Dropping IE9 + IE10 soon) 
 - Debounce feature. (TBA)
 - Target ancestors, siblings, ancestor siblings (TBA).
-
-
-
-
-
 
 
 MIT 2017 © Julien Etienne
