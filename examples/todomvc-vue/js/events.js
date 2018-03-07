@@ -1,8 +1,9 @@
  /**
-  YogaFire Vue.js example:
+  Yogafire Vue.js example:
  **/
+ // console.log('NAME', youga)
  {
-     const fire = yogaFire.fire;
+     const fire = yogafire.yogafire;
 
      const elementIndex = element => {
          const list = Array.from(element.parentNode.children);

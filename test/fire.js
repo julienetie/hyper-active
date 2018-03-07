@@ -1,5 +1,5 @@
 import test from 'tape';
-import fire from '../src/fire';
+import yogafire from '../src/yogafire';
 
 const errorMessages = {
     fireUndefined: `"undefined" is invalid, see fireConfig 
@@ -8,13 +8,13 @@ const errorMessages = {
 
 test('fire: Should be a function.', t => {
     t.plan(1);
-    t.equal(typeof fire, 'function');
+    t.equal(typeof yogafire, 'function');
 });
 
-test('fire: fireConfig should throw an error if undefined', t => {
+test('yogafire: fireConfig should throw an error if undefined', t => {
     t.plan(1);
     t.throws(function() {
-        fire();
+        yogafire();
     });
 });
 

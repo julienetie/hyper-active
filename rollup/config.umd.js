@@ -4,20 +4,24 @@ import commonjs from 'rollup-plugin-commonjs';
 import eslint from 'rollup-plugin-eslint';
 
 export default {
-	moduleName: 'yogaFire',
-	entry: './src/index.js',
-	plugins: [
-		eslint(),
-		babel({
-			babelrc: false,
-			presets: ["es2015-rollup"]
-		}),
-		nodeResolve({
-			jsnext: true,
-			main: true
-		}),
-		commonjs()
-	],
-	format: 'umd',
-	dest: './dist/es5/yogafire.umd.js'
+    input: './src/index.js',
+    plugins: [
+        eslint(),
+        babel({
+            babelrc: false,
+            presets: ["es2015-rollup"]
+        }),
+        nodeResolve({
+            jsnext: true,
+            main: true
+        }),
+        commonjs()
+    ],
+    output: {
+        name: 'yogafire',
+        format: 'umd',
+        file: './dist/es5/yogafire.umd.js',
+        sourcemap: true
+    }
+
 };

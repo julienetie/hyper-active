@@ -1,11 +1,11 @@
-import fire from './fire';
-import ceaseFire from './cease-fire';
+import yogafire from './yogafire';
+import ceasefire from './cease-fire';
 
 /**
  * The yogaFire API.
  */
 export {
-    fire,
-    ceaseFire
+    yogafire,
+    ceasefire
 };
 

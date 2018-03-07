@@ -2,8 +2,7 @@ import babel from 'rollup-plugin-babel';
 import nodeResolve from 'rollup-plugin-node-resolve';
 
 export default {
-	moduleName: 'yogaFire',
-	entry: './src/index.js',
+	input: './src/index.js',
 	plugins: [
 		babel({
 			babelrc: false,
@@ -14,6 +13,9 @@ export default {
 			main: true
 		})
 	],
-	format: 'es',
-	dest: './dist/yogafire.js'
+    output: {
+        format: 'es',
+        file: './dist/yogafire.js',
+        sourcemap: true
+    }
 };

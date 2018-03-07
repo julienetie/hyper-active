@@ -1,7 +1,7 @@
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
 	typeof define === 'function' && define.amd ? define(['exports'], factory) :
-	(factory((global.yogaFire = global.yogaFire || {})));
+	(factory((global.yogafire = {})));
 }(this, (function (exports) { 'use strict';
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
@@ -9,60 +9,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 } : function (obj) {
   return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 var toConsumableArray = function (arr) {
   if (Array.isArray(arr)) {
@@ -109,7 +55,6 @@ var storage = { attachedEvents: null, ignoreSuspects: {} };
 var isString = function isString(value) {
     return typeof value === 'string';
 };
-
 var isFunction = function isFunction(value) {
     return typeof value === 'function';
 };
@@ -133,7 +78,7 @@ var notice = function notice(message, style) {
 var hasProperty = function hasProperty(obj, property) {
     return !!Object.getOwnPropertyDescriptor(obj, property);
 };
-var error$1 = function error(value, parameter, linkHash) {
+var error = function error(value, parameter, linkHash) {
     notice('%c :: yogafire ::', 'color: #999;');
     throw new Error('"' + value + '" is invalid, see ' + parameter + ' \n\uD83D\uDD17 https://github.com/julienetie/yogafire/wiki/Docs' + linkHash + '\n');
 };
@@ -206,7 +151,7 @@ var addEventListeners = (function (eventDescriptions) {
             eventSetName = _ref.eventSetName;
 
         if (!isString(eventType)) {
-            error$1(eventType, 'eventType', '*#eventType');
+            error(eventType, 'eventType', '*#eventType');
         }
 
         var handlerWrapper = function handlerWrapper(e) {
@@ -300,17 +245,17 @@ var fireEnclosing = function fireEnclosing() {
     var suspectsList = [];
 
     /**
-     * The fire API.
+     * The yogafire API.
      *
      * @param {Object|string|Element| Array} fireConfig - The event delegation
      * config or first parameter for singleEvents.
      * @param {Array} singleParams - Event type, handler and use capture
      * parameters for singleEvents.
      */
-    return function fire(fireConfig) {
+    return function yogafire(fireConfig) {
         // Ensure fireConfig is defined.
         if (fireConfig === undefined) {
-            error$1(fireConfig, 'fireConfig', '*#fireConfig');
+            error(fireConfig, 'fireConfig', '*#fireConfig');
         }
 
         // Check if usage requires fireConfig or singleEvent API.
@@ -339,7 +284,7 @@ var fireEnclosing = function fireEnclosing() {
             });
 
             if (!isSuspectsValid) {
-                error$1(suspectsSynonomous, 'suspect|suspects', '*#suspect');
+                error(suspectsSynonomous, 'suspect|suspects', '*#suspect');
             }
 
             if (isFunction(handler)) {
@@ -352,7 +297,7 @@ var fireEnclosing = function fireEnclosing() {
                 var handlerLinkIndex = handlerLinkingList.indexOf(handler);
                 resolvedHandler = handlerList[handlerLinkIndex];
             } else {
-                error$1(suspectsSynonomous, 'handler', '*#handler');
+                error(suspectsSynonomous, 'handler', '*#handler');
             }
 
             eventSetNameList.push(eventSetName);
@@ -384,7 +329,7 @@ var fireEnclosing = function fireEnclosing() {
     };
 };
 
-var fire = fireEnclosing();
+var yogafire = fireEnclosing();
 
 var notAnArray = 'ignoreSuspects should be an Array';
 
@@ -393,7 +338,7 @@ var notAnArray = 'ignoreSuspects should be an Array';
  *
  * @param {Object} ceaseFireConfig - Cease-fire Options.
  */
-var ceaseFire = function ceaseFire(ceaseFireConfig) {
+var ceasefire = function ceasefire(ceaseFireConfig) {
     // Ignore suspects
     if (hasProperty(ceaseFireConfig, 'ignoreSuspects')) {
         if (isPlaneObject(ceaseFireConfig.ignoreSuspects)) {
@@ -434,9 +379,10 @@ var ceaseFire = function ceaseFire(ceaseFireConfig) {
     }
 };
 
-exports.fire = fire;
-exports.ceaseFire = ceaseFire;
+exports.yogafire = yogafire;
+exports.ceasefire = ceasefire;
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
+//# sourceMappingURL=yogafire.umd.js.map

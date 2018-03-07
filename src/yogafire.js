@@ -16,14 +16,14 @@ const fireEnclosing = () => {
     const suspectsList = [];
 
     /**
-     * The fire API.
+     * The yogafire API.
      *
      * @param {Object|string|Element| Array} fireConfig - The event delegation
      * config or first parameter for singleEvents.
      * @param {Array} singleParams - Event type, handler and use capture
      * parameters for singleEvents.
      */
-    return function fire(fireConfig, ...singleParams) {
+    return function yogafire(fireConfig, ...singleParams) {
         // Ensure fireConfig is defined.
         if (fireConfig === undefined) {
             error(fireConfig, 'fireConfig', '*#fireConfig');

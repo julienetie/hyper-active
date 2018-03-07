@@ -27,7 +27,6 @@ var isPlaneObject = (value => {
 const storage = { attachedEvents: null, ignoreSuspects: {} };
 
 const isString = value => typeof value === 'string';
-
 const isFunction = value => typeof value === 'function';
 const isElement = value => value instanceof window.Element;
 const getElement = selector => document.querySelector(selector);
@@ -185,14 +184,14 @@ const fireEnclosing = () => {
     const suspectsList = [];
 
     /**
-     * The fire API.
+     * The yogafire API.
      *
      * @param {Object|string|Element| Array} fireConfig - The event delegation
      * config or first parameter for singleEvents.
      * @param {Array} singleParams - Event type, handler and use capture
      * parameters for singleEvents.
      */
-    return function fire(fireConfig, ...singleParams) {
+    return function yogafire(fireConfig, ...singleParams) {
         // Ensure fireConfig is defined.
         if (fireConfig === undefined) {
             error(fireConfig, 'fireConfig', '*#fireConfig');
@@ -257,7 +256,7 @@ const fireEnclosing = () => {
     };
 };
 
-var fire = fireEnclosing();
+var yogafire = fireEnclosing();
 
 const notAnArray = 'ignoreSuspects should be an Array';
 
@@ -266,7 +265,7 @@ const notAnArray = 'ignoreSuspects should be an Array';
  *
  * @param {Object} ceaseFireConfig - Cease-fire Options.
  */
-const ceaseFire = ceaseFireConfig => {
+const ceasefire = ceaseFireConfig => {
     // Ignore suspects
     if (hasProperty(ceaseFireConfig, 'ignoreSuspects')) {
         if (isPlaneObject(ceaseFireConfig.ignoreSuspects)) {
@@ -305,4 +304,5 @@ const ceaseFire = ceaseFireConfig => {
     }
 };
 
-export { fire, ceaseFire };
+export { yogafire, ceasefire };
+//# sourceMappingURL=yogafire.js.map

@@ -10,7 +10,7 @@ const notAnArray = 'ignoreSuspects should be an Array';
  *
  * @param {Object} ceaseFireConfig - Cease-fire Options.
  */
-const ceaseFire = ceaseFireConfig => {
+const ceasefire = ceaseFireConfig => {
     // Ignore suspects
     if (hasProperty(ceaseFireConfig, 'ignoreSuspects')) {
         if (isPlaneObject(ceaseFireConfig.ignoreSuspects)) {
@@ -57,4 +57,4 @@ const ceaseFire = ceaseFireConfig => {
 };
 
 
-export default ceaseFire;
+export default ceasefire;
