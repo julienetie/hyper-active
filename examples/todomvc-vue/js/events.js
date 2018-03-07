@@ -1,78 +1,81 @@
-(function(window, document, yogafire, undefined) {
-    var fire = yogafire.fire;
-    console.log('exportsApp', exportsApp)
+ /**
+  YogaFire Vue.js example:
+ **/
+ {
+     const fire = yogaFire.fire;
 
-    const elementIndex = element => {
-        var list = [].slice.call(element.parentNode.children);
-        var listLength = list.length;
-        for (let i = 0; i < listLength; i++) {
-            if (list[i] === element) {
-                return i;
-            }
-        }
-    }
+     const elementIndex = element => {
+         const list = Array.from(element.parentNode.children);
+         const listLength = list.length;
+         for (let i = 0; i < listLength; i++) {
+             if (list[i] === element) {
+                 return i;
+             }
+         }
+     }
 
-    const changeView = view => exportsApp.visibility = view;
+     const actionTodo = (type) => {
+         return (e, target) => {
+             console.log(e, target)
+             const todo = target.closest('.todo');
+             const index = elementIndex(todo);
+             exportsApp[type](exportsApp.todos[index]);
+         }
+     }
 
-    fire({
-        click: {
-            suspect: ['.destroy', '.clear-completed', '.all', '.active', '.completed'],
-            handler: (e, target) => {
-                const handlers = {
-                    destroy: () => {
-                        var todo = target.closest('.todo');
-                        var index = elementIndex(todo);
-                        exportsApp.removeTodo(exportsApp.todos[index]);
-                    },
-                    'clear-completed': () => exportsApp.removeCompleted(e),
-                    all: () => changeView('all'),
-                    active: () => changeView('active'),
-                    completed: () => changeView('completed'),
-                }
+     const editTodo = actionTodo('editTodo');
+     const doneEdit = actionTodo('doneEdit');
+     const changeView = view => exportsApp.visibility = view;
 
-                handlers[target.className.trim()]();
-            }
-        },
-        dblclick: {
-            suspect: '.label',
-            handler: (e, target) => {
-                var todo = target.closest('.todo');
-                var index = elementIndex(todo);
-                exportsApp.editTodo(exportsApp.todos[index]);
-            }
-        },
-        focusout: {
-            suspect: '.edit',
-            handler: (e, target) => {
-                var todo = target.closest('.todo');
-                var index = elementIndex(todo);
-                exportsApp.doneEdit(exportsApp.todos[index]);
-            }
-        },
-        keypress: {
-            suspects: ['.new-todo'],
-            handler: (e, target) => {
-                if (e.keyCode === 13 && target.value.length) {
-                    exportsApp.addTodo();
-                }
-            }
-        },
-        keyup: {
-            suspect: '.edit',
-            handler: (e, target) => {
-                var todo = target.closest('.todo');
-                var index = elementIndex(todo);
-                switch (e.keyCode) {
-                    case 13:
-                        exportsApp.doneEdit(exportsApp.todos[index]);
-                        return;
-                    case 27:
-                        exportsApp.cancelEdit(exportsApp.todos[index]);
-                        return;
-                }
-            }
-        },
-    });
+     fire({
+         click: {
+             suspect: ['.destroy', '.clear-completed', '.all', '.active', '.completed'],
+             handler: (e, target) => {
+                 const handlers = {
+                     destroy: () => {
+                         var todo = target.closest('.todo');
+                         var index = elementIndex(todo);
+                         exportsApp.removeTodo(exportsApp.todos[index]);
+                     },
+                     'clear-completed': () => exportsApp.removeCompleted(e),
+                     all: () => changeView('all'),
+                     active: () => changeView('active'),
+                     completed: () => changeView('completed'),
+                 }
 
-
-})(window, document, yogaFire);
+                 handlers[target.className.trim()]();
+             }
+         },
+         dblclick: {
+             suspect: '.label',
+             handler: editTodo
+         },
+         focusout: {
+             suspect: '.edit',
+             handler: doneEdit
+         },
+         keypress: {
+             suspects: ['.new-todo'],
+             handler: (e, target) => {
+                 if (e.keyCode === 13 && target.value.length) {
+                     exportsApp.addTodo();
+                 }
+             }
+         },
+         keyup: {
+             suspect: '.edit',
+             handler: (e, target) => {
+                 const todo = target.closest('.todo');
+                 const index = elementIndex(todo);
+                 switch (e.keyCode) {
+                     case 13:
+                         exportsApp.doneEdit(exportsApp.todos[index]);
+                         return;
+                     case 27:
+                         exportsApp.cancelEdit(exportsApp.todos[index]);
+                         return;
+                 }
+             }
+         },
+     });
+ }
