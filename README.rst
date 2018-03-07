@@ -18,9 +18,9 @@ Event delegation
 
 .. code:: javascript
   
-    import { fire } from 'yogafire';
+    import { yogafire } from 'yogafire';
 
-    fire({
+    yogafire({
         click: {
             suspects: ['.suspect1', '.suspect2', '.suspect3'],
             handler: ({target}) => console.log(`The target is ${target.className}` 
@@ -40,9 +40,9 @@ Ignore targets
 
 .. code:: javascript
   
-    import { ceaseFire } from 'yogafire';
+    import { ceasefire } from 'yogafire';
 
-    ceaseFire({
+    ceasefire({
       ignoreSuspects: ['.suspect1', '.suspect2']
     })
     
@@ -52,9 +52,9 @@ Remove delegated events
 
 .. code:: javascript
   
-    import { ceaseFire } from 'yogafire';
+    import { ceasefire } from 'yogafire';
 
-    ceaseFire({
+    ceasefire({
       removeEvents: [
           'mousemove:dblclick',
           'blur'
