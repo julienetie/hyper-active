@@ -81,19 +81,23 @@ Remove single events
 Details
 =======
 
-- No dependencies.
-- IE9+s support (No legacy bloat).
-- Synthetic events: Pollyfills and normalises event inconsistencies. (TBA)
-- Supports multiple suspects.
-- Supports multiple event types.
-- Shared handlers by link reference.
-- Shared suspects by link reference.
-- Mouseenter and mouseleave emulation. (TBA)
+- [[No dependencies]]
+- [[7kb]]
+- [[Improve performance]] (ideal for mobile devices)
+- [[Significantly reduce event listener usage]]
+- [[Reduce or eliminate memory leaks]]
+- [[Improve maintainability of events]]
+- [[Improve life-cycle predictability of events]]
+- [[Provide delegation helper parameters to reduce conditional logic]]
+- [[provide a clean events removal system]]
+- IE9+ support (Dropping IE9 + IE10 soon) 
 - Debounce feature. (TBA)
-- Extended parameters. (TBA)
 - Target ancestors, siblings, ancestor siblings (TBA).
-- Synthetic single events.
-- Remove events without parameters.
-- Ability to ignore tracked suspects.
+
+
+
+
+
+
 
 MIT 2017 © Julien Etienne
