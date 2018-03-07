@@ -10,7 +10,7 @@ Alpha: Not for production.
 ```
 
 ```
-example/todomvc-vue is a fully working demo.  
+example/todomvc-vue is a working demo.  
 ```
 
 A Flexible Event Delegation Library
