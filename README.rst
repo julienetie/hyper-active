@@ -99,4 +99,4 @@ Details
 - Target ancestors, siblings, ancestor siblings (TBA).
 
 
-MIT 2017 © Julien Etienne
+MIT 2018 © Julien Etienne
