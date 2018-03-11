@@ -1,6 +1,6 @@
 {
   "name": "yogafire",
-  "version": "0.1.0",
+  "version": "0.2.3",
   "description": "A Flexible Event Delegation System",
   "main": "dist/es5/yogafire.umd.js",
   "jsnext:main": "dist/yogafire.js",
@@ -37,6 +37,7 @@
     "jsdom": "^11.6.2",
     "lodash": "^4.16.4",
     "mocha": "^5.0.2",
+    "nightmare": "^3.0.0",
     "nodemon": "^1.11.0",
     "rollup": "^0.56.4",
     "rollup-plugin-babel": "^3.0.3",

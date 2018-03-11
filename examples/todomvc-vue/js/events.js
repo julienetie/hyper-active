@@ -30,7 +30,7 @@
 
      fire({
          click: {
-             suspect: ['.destroy', '.clear-completed', '.all', '.active', '.completed'],
+             suspects: ['.destroy', '.clear-completed', '.all', '.active', '.completed'],
              handler: (e, target) => {
                  const handlers = {
                      destroy: () => {
@@ -56,7 +56,7 @@
              handler: doneEdit
          },
          keypress: {
-             suspects: ['.new-todo'],
+             suspect: ['.new-todo'],
              handler: (e, target) => {
                  if (e.keyCode === 13 && target.value.length) {
                      exportsApp.addTodo();
