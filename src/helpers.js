@@ -17,6 +17,7 @@ const notice = (message, style) => {
 export const hasProperty = (obj, property) => !!Object.getOwnPropertyDescriptor(obj, property);
 export const error = (value, parameter, linkHash) => {
     notice('%c :: yogafire ::', 'color: #999;');
+    // throw new TypeError()
     throw new Error(
         `"${value}" is invalid, see ${parameter} \n🔗 https://github.com/julienetie/yogafire/wiki/Docs${linkHash}\n`);
 };

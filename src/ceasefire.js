@@ -8,7 +8,7 @@ const notAnArray = 'ignoreSuspects should be an Array';
 /**
  * API for removing events and ignoring suspects.
  *
- * @param {Object} ceaseFireConfig - Cease-fire Options.
+ * @param {Object} ceaseFireConfig - Ceasefire Options.
  */
 const ceasefire = ceaseFireConfig => {
     // Ignore suspects

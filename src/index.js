@@ -1,5 +1,5 @@
 import yogafire from './yogafire';
-import ceasefire from './cease-fire';
+import ceasefire from './ceasefire';
 
 /**
  * The yogaFire API.

@@ -6,7 +6,7 @@
   "jsnext:main": "dist/yogafire.js",
   "scripts": {
     "build": "rollup -c ./rollup/config.es.js && rollup -c ./rollup/config.umd.js ",
-    "test": "tape -r babel-register ./test/**/**.js | faucet",
+    "test": "./node_modules/.bin/ava",
     "watch-test": "./node_modules/.bin/nodemon -q -x \"yarn test\"",
     "watch": "rollup -c ./rollup/config.umd.js -w",
     "lint": "./node_modules/.bin/eslint ./src/*"
@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/julienetie/yogafire#readme",
   "devDependencies": {
+    "ava": "^0.25.0",
     "babel-cli": "^6.18.0",
     "babel-plugin-lodash": "^3.2.9",
     "babel-preset-es2015": "^6.18.0",
@@ -50,5 +51,15 @@
   "dependencies": {
     "lodash-es": "^4.16.4",
     "run-once": "^1.0.0"
+  },
+  "ava": {
+    "files": [
+      "./test/unit/**/*.js"
+    ],
+    "require": [
+      "babel-register"
+    ],
+    "inherit": true,
+    "verbose": true
   }
 }

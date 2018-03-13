@@ -97,6 +97,10 @@ const fireEnclosing = () => {
         // Set up event listeners for delegation.
         return addEventListeners(eventListeners);
     };
+
+   // return function foeihfwo(){
+   //  throw new Error('🦄');
+   // }
 };
 
 export default fireEnclosing();
