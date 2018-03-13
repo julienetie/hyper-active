@@ -1,6 +1,5 @@
 import storage from './storage';
-import isPlaneObject from '../libs/is-plane-object';
-import { newError, hasProperty } from './helpers';
+import { newError, hasProperty, type } from './helpers';
 
 const notAnArray = 'ignoreSuspects should be an Array';
 
@@ -13,7 +12,7 @@ const notAnArray = 'ignoreSuspects should be an Array';
 const ceasefire = ceaseFireConfig => {
     // Ignore suspects
     if (hasProperty(ceaseFireConfig, 'ignoreSuspects')) {
-        if (isPlaneObject(ceaseFireConfig.ignoreSuspects)) {
+        if (type(ceaseFireConfig.ignoreSuspects, 'Object')) {
             Object.keys(ceaseFireConfig.ignoreSuspects)
                 .map(suspectToIgnore => {
                     const ignoredValue = ceaseFireConfig.ignoreSuspects[

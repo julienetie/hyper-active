@@ -8,23 +8,24 @@ test('yogafire: Should be a function.', t => {
     t.is(typeof yogafire, 'function');
 });
 
-test('throws', t => {
-    const error = t.throws(function() {
-        yogafire()
-    }, Error);
-// DO NOT REFACTOR
-    t.is(error.message, `"undefined" is invalid, see fireConfig 
-🔗 https://github.com/julienetie/yogafire/wiki/Docs*#fireConfig
-`);
-});
+test('yogafire: fireConfig should throw an error if undefined',
+    t => {
+        const error = t.throws(function() {
+            yogafire()
+        }, Error);
+        t.is(error.message, 'The configuration is empty');
+    }
+);
 
 // // fireConfig should throw an error if has no properties "eventSet".
-// test('yogafire: fireConfig should throw an error if has no properties "eventSet"', t => {
-//     t.plan(1);
-//     t.throws(function() {
-//         yogafire({});
-//     });
-// });
+test('yogafire: fireConfig should throw an error if has no properties "eventSet"',
+    t => {
+        const error = t.throws(function() {
+            yogafire({})
+        }, Error);
+        t.is(error.message, 'An eventSet must be defined');
+    }
+);
 
 // // fireConfig should throw an error if eventSet doesnot contain suspect|suspects and handler
 // test('yogafire: fireConfig should throw an error if eventSet doesnot contain suspect|suspects and handler', t => {

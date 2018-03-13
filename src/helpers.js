@@ -3,6 +3,7 @@ export const isPrimitive = value => isString(value) || typeof value === 'number'
 export const isFunction = value => typeof value === 'function';
 export const isElement = value => value instanceof window.Element;
 export const getElement = selector => document.querySelector(selector);
+export const type = (value, typeClass) => ({}).toString.call(value).includes(typeClass);
 export const newError = message => {
     throw new Error(message);
 };
@@ -19,5 +20,6 @@ export const error = (value, parameter, linkHash) => {
     notice('%c :: yogafire ::', 'color: #999;');
     // throw new TypeError()
     throw new Error(
-        `"${value}" is invalid, see ${parameter} \n🔗 https://github.com/julienetie/yogafire/wiki/Docs${linkHash}\n`);
+        `"${value}" is invalid, see ${parameter} \n🔗 https://github.com/julienetie/yogafire/wiki/API-🔥${linkHash}\n`
+    );
 };

@@ -1,6 +1,5 @@
-import isPlaneObject from '../libs/is-plane-object';
 import addEventListeners from './add-event-listeners';
-import { isString, isElement, isFunction, error } from './helpers';
+import { isString, isElement, isFunction, error, type } from './helpers';
 import singleEvents from './single-events';
 
 
@@ -26,12 +25,16 @@ const fireEnclosing = () => {
     return function yogafire(fireConfig, ...singleParams) {
         // Ensure fireConfig is defined.
         if (fireConfig === undefined) {
-            error(fireConfig, 'fireConfig', '*#fireConfig');
+           throw new Error('The configuration is empty');
         }
 
+        // Ensures an eventSet has been defined.
+        if (Object.keys(fireConfig).length === 0) {
+            throw new Error('An eventSet must be defined');
+        }
 
         // Check if usage requires fireConfig or singleEvent API.
-        if (!isPlaneObject(fireConfig)) {
+        if (!type(fireConfig,'Object')) {
             return singleEvents(fireConfig, ...singleParams);
         }
 
