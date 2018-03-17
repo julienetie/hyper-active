@@ -44,7 +44,6 @@
 </head>
 
 <body>
-    <div id="mocha"></div>
     <div id="container"></div>
     <div id="cant-touch"></div>
     <script src="../../dist/es5/yogafire.umd.js"></script>
@@ -101,21 +100,6 @@
     setTimeout(() => {
         container.dispatchEvent(clickEvent);
     }, 3000)
-    </script>
-    <script src="https://cdn.rawgit.com/jquery/jquery/2.1.4/dist/jquery.min.js"></script>
-    <script src="https://cdn.rawgit.com/Automattic/expect.js/0.3.1/index.js"></script>
-    <script src="https://cdn.rawgit.com/mochajs/mocha/2.2.5/mocha.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chai/4.1.2/chai.min.js"></script>
-    <script>
-    mocha.setup({
-        ui: 'bdd',
-        ignoreLeaks: true,
-        asyncOnly: true
-    });
-    </script>
-    <script src="test1.js"></script>
-    <script>
-    mocha.run();
     </script>
 </body>
 
