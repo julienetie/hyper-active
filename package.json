@@ -7,6 +7,7 @@
   "scripts": {
     "build": "rollup -c ./rollup/config.es.js && rollup -c ./rollup/config.umd.js ",
     "test": "./node_modules/.bin/ava",
+    "e2e": "node_modules/.bin/testcafe chrome  ./test/e2e/test.js --app 'http-server ./ -s'",
     "watch-test": "./node_modules/.bin/nodemon -q -x \"yarn test\"",
     "watch": "rollup -c ./rollup/config.umd.js -w",
     "lint": "./node_modules/.bin/eslint ./src/*"
