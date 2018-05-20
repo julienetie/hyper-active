@@ -28,12 +28,19 @@ test('yogafire: fireConfig should throw an error if has no properties "eventSet"
 );
 
 // // fireConfig should throw an error if eventSet doesnot contain suspect|suspects and handler
-// test('yogafire: fireConfig should throw an error if eventSet doesnot contain suspect|suspects and handler', t => {
-//     t.plan(1);
-//     t.throws(function() {
-//         yogafire({ hello: 'world' });
-//     });
-// });
+test('yogafire: fireConfig should throw an error if eventSet doesnot contain suspect|suspects and handler', t => {
+    t => {
+        const error = t.throws(function() {
+            yogafire({
+                click: {
+                    suspect: ['.suspect1', '.suspect2', '.suspect3'],
+                    handler: ({target}) => console.log(`The target is ${target.className}`
+                }
+            });
+        }, Error);
+        t.is(error.message, 'An eventSet must be defined');
+    }
+});
 
 // fireConfig should throw an error if suspect| suspects is not a string or Array.
 // test('yogafire: fireConfig should throw an error if suspect| suspects is not a string or Array', t => {

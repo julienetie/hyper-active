@@ -5,10 +5,9 @@ import singleEvents from './single-events';
 
 /**
  * Enclosing function.
- *
  * @returns {Function} List of event details.
  */
-const fireEnclosing = () => {
+const yogafirePartial = () => {
     const handlerLinkingList = [];
     const handlerList = [];
     const eventSetNameList = [];
@@ -100,10 +99,6 @@ const fireEnclosing = () => {
         // Set up event listeners for delegation.
         return addEventListeners(eventListeners);
     };
-
-   // return function foeihfwo(){
-   //  throw new Error('🦄');
-   // }
 };
 
-export default fireEnclosing();
+export default yogafirePartial();

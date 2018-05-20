@@ -53,15 +53,14 @@
     </div>
     <script src="../dist/es5/yogafire.umd.js"></script>
     <script>
-    const {
-        fire,
-        ceaseFire
-    } = yogaFire;
 
-    fire();
-    // function clickMouseoverAction(e) {
-    //     console.log('clickMouseoverAction', e.target, e.type);
-    // };
+        var { yogafire } = yogafire;
+
+
+
+    function clickMouseoverAction(e) {
+        console.log('clickMouseoverAction', e.target, e.type);
+    };
 
     // function blurMousedownAction(e) {
     //     console.log('blurMousedownAction', e.target, e.type);
@@ -69,16 +68,16 @@
 
 
 
-    // fire({
-    //     mousemove: {
-    //         suspects: ['.target1', '.target2'],
-    //         handler: clickMouseoverAction
-    //     },
-    //     'dblclick:click': {
-    //         suspect: '#target3',
-    //         handler: 'mousemove'
-    //     }
-    // });
+    yogafire({
+        mousemove: {
+            suspects: ['.target1', '.target2'],
+            handler: clickMouseoverAction
+        },
+        'dblclick:click': {
+            suspect: '#target3',
+            handler: 'mousemove'
+        }
+    });
 
     // const singleEvent = e => console.log('Single *** Event' + e.target);
 
