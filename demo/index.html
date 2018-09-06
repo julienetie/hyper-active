@@ -61,7 +61,7 @@
 
 
     function clickMouseoverAction({e,target,match}) {
-        console.log('clickMouseoverAction \n', match) ;
+        console.log('clickMouseoverAction \n', e,target,match) ;
     };
 
     // function blurMousedownAction(e) {
@@ -71,10 +71,10 @@
 
 
     yogafire({
-        mousedown: {
+        keydown: {
             suspects: [
                 // 'closest-1 | closest',
-                '#target1', 
+                document, 
                 '#target2', 
                 '#target3'
             ],

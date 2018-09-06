@@ -43,7 +43,7 @@ export default eventDescriptions => {
      */
     const targetDetails = (e, suspects, eventSetName) => {
         // console.log('IS TARGET')
-          const target = e.target;
+        const target = e.target;
 
          // Check for suspects to ignore.
          const hasSuspectsToIgnore = hasProperty(storage.ignoreSuspects, eventSetName);
@@ -57,6 +57,11 @@ export default eventDescriptions => {
           }
 
         const targetConfigs = suspects.map(entry => {
+            if(entry === document){
+                return {
+                    method: 'document'
+                }
+            }
             const parts = entry.split(' | ');
             const cmdBindingKey = parts.length === 2 ? parts[1].trim() : '<';
             const method = cmdBindings[cmdBindingKey] || (cmdBindingKey.length > 0 ? cmdBindingKey : 'closest'); // Default 
@@ -69,19 +74,22 @@ export default eventDescriptions => {
         });
         let match;
         const hasMatch = targetConfigs.some(config => {
-                switch(config.method){
-                    case 'closest':   // Closest including the target element.
-                    const closestSelector = getSelector(config);
-                    match = target.closest(closestSelector);
-                    return match !== null;
-                    case 'contains': // Contains, excluding the target element.
-                    const containsSelector = getSelector(config);
-                    match = target.querySelector(containsSelector);
-                    return match !== null;
-                    case 'contact':  // The target element.
-                    match = target.dataset[config.suspect]
-                    return match !== undefined;
-                }
+            switch(config.method){
+                case 'closest':   // Closest including the target element.
+                const closestSelector = getSelector(config);
+                match = target.closest(closestSelector);
+                return match !== null;
+                case 'contains': // Contains, excluding the target element.
+                const containsSelector = getSelector(config);
+                match = target.querySelector(containsSelector);
+                return match !== null;
+                case 'contact':  // The target element.
+                match = target.dataset[config.suspect]
+                return match !== undefined;
+                case 'document':
+                match = document;
+                return true;
+            }
         });
         return {
             hasMatch,
