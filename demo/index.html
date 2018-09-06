@@ -39,17 +39,19 @@
 </head>
 
 <body>
-    <div class='target1'>
+    <div class='target1' id="target1" >
         TEST
         <div>
-            <button>SOME 3rd party widget</button>
+            <span>SOME 3rd party widget
+                <div > LALALALALALALA</div>
+            </span>
         </div>
     </div>
-    <div class='target2'>
-        TEST 2
+    <div class='target2' id="target2">
+        TEST 2<div>fwefwef</div>
     </div>
-    <div id='target3'>
-        TEST 3
+    <div id='target3' id="target3">
+        TEST 3<div>fwefwef</div>
     </div>
     <script src="../dist/es5/yogafire.umd.js"></script>
     <script>
@@ -58,8 +60,8 @@
 
 
 
-    function clickMouseoverAction(e) {
-        console.log('clickMouseoverAction', e.target, e.type);
+    function clickMouseoverAction({e,target,match}) {
+        console.log('clickMouseoverAction \n', match) ;
     };
 
     // function blurMousedownAction(e) {
@@ -69,14 +71,19 @@
 
 
     yogafire({
-        mousemove: {
-            suspects: ['.target1', '.target2'],
+        mousedown: {
+            suspects: [
+                // 'closest-1 | closest',
+                '#target1', 
+                '#target2', 
+                '#target3'
+            ],
             handler: clickMouseoverAction
-        },
-        'dblclick:click': {
-            suspect: '#target3',
-            handler: 'mousemove'
         }
+        // 'dblclick:click': {
+        //     suspect: '#target3',
+        //     handler: 'mousemove'
+        // }
     });
 
     // const singleEvent = e => console.log('Single *** Event' + e.target);

@@ -1,6 +1,24 @@
 import storage from './storage';
 import { error, hasProperty, isString } from './helpers';
 
+/** 
+ * Converts a hypenated string into camel-case
+ * @param {string}
+ * @return {string} Camel-cased string. 
+ */
+const hypenatedToCamelCase = string => {
+    const transfored = string.replace(/-([a-z])/g, g => g[1].toUpperCase()).replace(/-/g, '');
+    return transfored[0].toLowerCase() + transfored.slice(1);
+}
+
+const cmdBindings = {
+    '<': 'closest',
+    '>': 'contains',
+    '^': 'contact'
+};
+
+const getSelector =  (config) =>config.type === 'id' ? config.suspect : '[data-' + config.suspect + ']';
+
 /**
  * Attaches event listeners according to event discriptions.
  *
@@ -23,41 +41,52 @@ export default eventDescriptions => {
      * @param {Array} suspects - The possible targets.
      * @param {Function} eventSetName - The fireConfig property name.
      */
-    const isTarget = (e, suspects, eventSetName) => {
-        const target = e.target;
-        const targetClassName = target.className;
+    const targetDetails = (e, suspects, eventSetName) => {
+        // console.log('IS TARGET')
+          const target = e.target;
 
-        // Check for suspects ot ignore.
-        const hasSuspectsToIgnore = hasProperty(storage.ignoreSuspects, eventSetName);
-        let vettedSuspects;
+         // Check for suspects to ignore.
+         const hasSuspectsToIgnore = hasProperty(storage.ignoreSuspects, eventSetName);
+         let vettedSuspects;
 
-        if (hasSuspectsToIgnore) {
-            const suspectsToIgnore = storage.ignoreSuspects[eventSetName];
-            vettedSuspects = suspects.filter(
-                suspect => !suspectsToIgnore.includes(suspect)
-            );
-        } else {
-            vettedSuspects = suspects;
-        }
+          if (hasSuspectsToIgnore) {
+              const suspectsToIgnore = storage.ignoreSuspects[eventSetName];
+              vettedSuspects = suspects.filter(suspect => !suspectsToIgnore.includes(suspect));
+          } else {
+              vettedSuspects = suspects;
+          }
 
-        // Removes class and id prefixes.
-        const cleanSuspects = vettedSuspects.map(
-            suspect => suspect.replace('.', '').replace('#', '')
-        );
-
-        // Id match.
-        if (cleanSuspects.includes(target.id)) {
-            return true;
-            // Class match.
-        } else if (targetClassName) {
-            const hasClass = cleanSuspects
-                .filter(suspect => targetClassName.includes(suspect)).length > 0;
-            if (hasClass) {
-                return true;
+        const targetConfigs = suspects.map(entry => {
+            const parts = entry.split(' | ');
+            const cmdBindingKey = parts.length === 2 ? parts[1].trim() : '<';
+            const method = cmdBindings[cmdBindingKey] || (cmdBindingKey.length > 0 ? cmdBindingKey : 'closest'); // Default 
+            const type = parts[0][0] === '#' ? 'id' : 'data';
+            return {
+                type,
+                suspect: parts[0],
+                method
             }
-            return checkTagName(cleanSuspects, target.tagName);
+        });
+        let match;
+        const hasMatch = targetConfigs.some(config => {
+                switch(config.method){
+                    case 'closest':   // Closest including the target element.
+                    const closestSelector = getSelector(config);
+                    match = target.closest(closestSelector);
+                    return match !== null;
+                    case 'contains': // Contains, excluding the target element.
+                    const containsSelector = getSelector(config);
+                    match = target.querySelector(containsSelector);
+                    return match !== null;
+                    case 'contact':  // The target element.
+                    match = target.dataset[config.suspect]
+                    return match !== undefined;
+                }
+        });
+        return {
+            hasMatch,
+            match
         }
-        return checkTagName(cleanSuspects, target.tagName);
     };
 
 
@@ -68,8 +97,13 @@ export default eventDescriptions => {
             }
 
             const handlerWrapper = e => {
-                if (isTarget(e, suspects, eventSetName)) {
-                    handler(e, e.target);
+               const {hasMatch, match} = targetDetails(e, suspects, eventSetName);
+                if (hasMatch) {
+                    handler({
+                        e, 
+                        target: e.target,
+                        match 
+                    });
                 }
             };
 
