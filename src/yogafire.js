@@ -1,5 +1,5 @@
 import addEventListeners from './add-event-listeners';
-import { isString, isElement, isFunction, error, type } from './helpers';
+import { isString, isElement, isFunction, error, isObject } from './helpers';
 import singleEvents from './single-events';
 
 
@@ -33,7 +33,7 @@ const yogafirePartial = () => {
         }
 
         // Check if usage requires fireConfig or singleEvent API.
-        if (!type(fireConfig,'Object')) {
+        if (!isObject(fireConfig)) {
             return singleEvents(fireConfig, ...singleParams);
         }
 

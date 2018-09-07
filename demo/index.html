@@ -53,14 +53,17 @@
     <div id='target3' id="target3">
         TEST 3<div>fwefwef</div>
     </div>
-    <script src="../dist/es5/yogafire.umd.js"></script>
+    <script src="../dist/yogafire.umd.js"></script>
     <script>
 
-        var { yogafire } = yogafire;
+    const yf = yogafire.yogafire;
 
 
 
-    function clickMouseoverAction({e,target,match}) {
+    function clickMouseoverAction(eventObject) {
+        const e = eventObject.e;
+        const target = eventObject.target;
+        const match = eventObject.match;
         console.log('clickMouseoverAction \n', e,target,match) ;
     };
 
@@ -70,8 +73,8 @@
 
 
 
-    yogafire({
-        keydown: {
+    yf({
+        mousedown: {
             suspects: [
                 // 'closest-1 | closest',
                 document, 

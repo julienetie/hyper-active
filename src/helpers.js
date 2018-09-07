@@ -4,7 +4,7 @@ export const isFunction = value => typeof value === 'function';
 export const isElement = value => value instanceof window.Element;
 export const getElement = selector => document.querySelector(selector);
 export const isObject = value => typeof value === 'object' &&  value !== null && !Array.isArray(value); 
-export const type = (value, typeClass) => ({}).toString.call(value).includes(typeClass);
+// export const type = (value, typeClass) => ({}).toString.call(value).includes(typeClass);
 export const newError = message => {
     throw new Error(message);
 };
