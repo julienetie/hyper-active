@@ -11,13 +11,18 @@ const hypenatedToCamelCase = string => {
     return transfored[0].toLowerCase() + transfored.slice(1);
 }
 
+const camelCaseToHyphenated = string => {
+    return string.replace( /([a-z])([A-Z])/g, '$1-$2' ).toLowerCase();
+}
+
 const cmdBindings = {
     '<': 'closest',
     '>': 'contains',
     '^': 'contact'
 };
 
-const getSelector =  (config) =>config.type === 'id' ? config.suspect : '[data-' + config.suspect + ']';
+const getSelector = (config) => config.type === 'id' ? config.suspect : '[data-' + config.suspect + ']';
+const getDataSelector = (config) => config.type === 'data' ? hypenatedToCamelCase(config.suspect) : null;
 
 /**
  * Attaches event listeners according to event discriptions.
@@ -42,22 +47,22 @@ export default eventDescriptions => {
      * @param {Function} eventSetName - The fireConfig property name.
      */
     const targetDetails = (e, suspects, eventSetName) => {
-        // console.log('IS TARGET')
+
         const target = e.target;
 
-         // Check for suspects to ignore.
-         const hasSuspectsToIgnore = hasProperty(storage.ignoreSuspects, eventSetName);
-         let vettedSuspects;
+        // Check for suspects to ignore.
+        const hasSuspectsToIgnore = hasProperty(storage.ignoreSuspects, eventSetName);
+        let vettedSuspects;
 
-          if (hasSuspectsToIgnore) {
-              const suspectsToIgnore = storage.ignoreSuspects[eventSetName];
-              vettedSuspects = suspects.filter(suspect => !suspectsToIgnore.includes(suspect));
-          } else {
-              vettedSuspects = suspects;
-          }
+        if (hasSuspectsToIgnore) {
+            const suspectsToIgnore = storage.ignoreSuspects[eventSetName];
+            vettedSuspects = suspects.filter(suspect => !suspectsToIgnore.includes(suspect));
+        } else {
+            vettedSuspects = suspects;
+        }
 
         const targetConfigs = suspects.map(entry => {
-            if(entry === document){
+            if (entry === document) {
                 return {
                     method: 'document'
                 }
@@ -73,28 +78,51 @@ export default eventDescriptions => {
             }
         });
         let match;
+        let selector = null;
+        let dataSelector = null;
+        let suspect = null;
         const hasMatch = targetConfigs.some(config => {
-            switch(config.method){
-                case 'closest':   // Closest including the target element.
-                const closestSelector = getSelector(config);
-                match = target.closest(closestSelector);
-                return match !== null;
+            switch (config.method) {
+                case 'closest': // Closest including the target element.
+                    selector = getSelector(config);
+                    dataSelector = getDataSelector(config);
+                    suspect = config.suspect;
+                    match = target.closest(selector);
+                    return match !== null;
                 case 'contains': // Contains, excluding the target element.
-                const containsSelector = getSelector(config);
-                match = target.querySelector(containsSelector);
-                return match !== null;
-                case 'contact':  // The target element.
-                match = target.dataset[config.suspect]
-                return match !== undefined;
+                    selector = getSelector(config);
+                    dataSelector = getDataSelector(config);
+                    suspect = config.suspect;
+                    match = target.querySelector(selector);
+                    return match !== null;
+                case 'contact': // The target element.
+                    switch(config.type){
+                        case 'data':
+                        selector = '[data-' + config.suspect + ']';
+                        const camelCaseSelector = hypenatedToCamelCase(config.suspect);
+                        match = target.dataset[camelCaseSelector] !== undefined;
+                        break;
+                        case 'id':
+                        selector = config.suspect;
+                        match = target.id === config.suspect.substr(1);
+                        break;
+                    }
+                    suspect = config.suspect;
+                    dataSelector = getDataSelector(config);
+                    return match; 
                 case 'document':
-                match = document;
-                return true;
+                    suspect = document;
+                    match = document;
+                    return true;
             }
         });
         return {
             hasMatch,
-            match
-        }
+            match,
+            selector,
+            suspect,
+            dataSelector,
+        };
     };
 
 
@@ -105,12 +133,15 @@ export default eventDescriptions => {
             }
 
             const handlerWrapper = e => {
-               const {hasMatch, match} = targetDetails(e, suspects, eventSetName);
+                const { hasMatch, match, selector, dataSelector, suspect } = targetDetails(e, suspects, eventSetName);
                 if (hasMatch) {
                     handler({
-                        e, 
+                        e,
                         target: e.target,
-                        match 
+                        match,
+                        selector,
+                        dataSelector,
+                        suspect
                     });
                 }
             };

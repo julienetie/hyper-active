@@ -42,11 +42,12 @@ const yogafirePartial = () => {
         const eventListeners2d = eventsObjectKeys.map(eventSetName => {
             const { suspect, suspects, handler } = fireConfig[eventSetName];
             // Treats suspects and suspect synonomously.
-            const suspectsSynonomous = suspects || suspect;
+            const suspectsSynonomous = suspects || [suspect];
             let resolvedHandler;
 
 
             const isSuspectsValid = [
+                suspectsSynonomous === document,
                 isElement(suspectsSynonomous),
                 isString(suspectsSynonomous),
                 Array.isArray(suspectsSynonomous)
