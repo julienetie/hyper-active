@@ -25,6 +25,7 @@ click.closest(...nodes).fire(...callbacks);
 ```javascript
 click.contains(...nodes).fire(...callbacks);
 ```
+
 ### fireAll()
 - Will fire all callbacks providing that a target is matched
 ```javascript
@@ -44,6 +45,27 @@ Will throttle the specified callbacks
 - delay: In milliseconds 
 ```javascript
 mousemove.contains(...nodes).throttle(delay).fire(...callbacks);
+```
+### Suspects as an object 
+```javascript
+click.contains({
+  one: node,
+  two: node,
+  three: node
+}).fire(...callbacks); // Objects are converted to arrays in alphabetical order.
+```
+
+### Handlers as an object.
+```javascript
+click.contains({
+  one: node,
+  two: node,
+  three: node
+}).fire({
+  one: function,
+  two: function,
+  three: function
+}); // Objects are converted to arrays in alphabetical order.
 ```
 ### name()
 Adds a data attribute to each element which is also provided as parameters for triggered callback
