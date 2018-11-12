@@ -15,7 +15,7 @@ Alpha: Not ready for production.
 click.is(...nodes).fire(...callbacks);
 ```
 - Same as above except...
-- If the target's ancestor matches one of the specified nodes
+- If one of the specified nodes is the target's ancestor 
 ```javascript
 click.closest(...nodes).fire(...callbacks);
 ```
