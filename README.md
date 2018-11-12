@@ -7,7 +7,7 @@ Alpha: Not ready for production.
 ## A Flexible Event Delegation Library
 
 
-### is() closest() & contains() with fire()
+### is() closest(), contains(), not() with fire()
 - For the click event 
 - If the target matches one of the specified nodes
 - Fire the respective callback i.e. (nodes[0] will trigger callbacks[0])
@@ -24,6 +24,13 @@ click.closest(...nodes).fire(...callbacks);
 - If the target contains one of the specified nodes
 ```javascript
 click.contains(...nodes).fire(...callbacks);
+```
+
+- The inverse of the above...
+```javascript
+click.is.not(...nodes).fire(...callbacks);
+click.not.contains(...nodes).fire(...callbacks);
+click.not.closest(...nodes).fire(...callbacks);
 ```
 
 ### fireAll()
