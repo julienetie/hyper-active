@@ -88,6 +88,20 @@ Removes event listeners from the document, window and from any specified events
 mousedown.remove();
 ```
 
+### debounce(): Standalone
+A standalone debounce to use with native event listeners 
+```javascript
+const bouncedCallback = debounce(callback,delay,tail);
+window.addEventListener('keyup', bouncedCallback, false);
+```
+
+### throttle(): Standalone
+A standalone throttle to use with native event listeners 
+```javascript
+const throttledCallback = throttle(callback,delay,tail);
+window.addEventListener('keyup', throttledCallback, false);
+```
+
 ### parentElements
 Override the parent element for delegaton. 
 ```javascript
@@ -95,6 +109,6 @@ click(someElement).closest(...nodes).fireAll(...callbacks);
 ```
 
 ### parentElements List
-TBA: A list of default parent elements (Either document or window)
+TBA: A list of events, their default parent elements (Either document or window) and their propagation defaults 
 
 MIT 2018 © Julien Etienne
