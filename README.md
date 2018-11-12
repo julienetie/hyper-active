@@ -75,6 +75,13 @@ mouseup.contains(...nodes).name('side-bar').debounce(delay).fire(({name, target}
   console.log(target.dataset) // sideBar2
 });
 ```
+When using object based suspects, name without an argument will use the names of object keys  
+```javascript
+mouseup.contains({one: node, two: node}).name().debounce(delay).fire(({name, target}) => {
+  console.log(name) // two;
+  console.log(target.dataset) // two
+});
+```
 
 
 ### ref()
