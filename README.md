@@ -1,85 +1,27 @@
-########
-yogafire
-########
-
-.. image:: https://preview.ibb.co/bYQGNa/yoga_fire.gif
-
-
 ```
-Alpha: Not for production.
+Alpha: Not ready for production.
+```
+# yogafire
+<img src="https://preview.ibb.co/bYQGNa/yoga_fire.gif">
+
+## A Flexible Event Delegation Library
+
+
+- For the click event 
+- If the target matches one of the specified nodes
+- Fire the respective callback i.e. (nodes[0] will trigger callbacks[0])
+```javascript
+click.is(...nodes).fire(...callbacks);
+```
+- If the target's ancestor matches one of the specified nodes
+```javascript
+click.closest(...nodes).fire(...callbacks);
 ```
 
-```
-example/todomvc-vue is a working demo.  
-```
+- If the target contains one of the specified nodes
+```javascript
+click.contains(...nodes).fire(...callbacks);
 
-A Flexible Event Delegation Library
-###################################
-
-
-Event delegation
-================
-
-.. code:: javascript
-  
-    import { yogafire } from 'yogafire';
-
-    yogafire({
-        click: {
-            suspects: ['.suspect1', '.suspect2', '.suspect3'],
-            handler: ({target}) => console.log(`The target is ${target.className}` 
-        },
-        'mousemove:dblclick': {
-            suspect: 'click' // Link reference
-            handler: aFunctionForMouseMoveDoubleClickAndBlurSeeTheBelowReference
-        },
-        blur: {
-            suspects: [input1,input2, '#textArea'],
-            handler: 'mousemove:dblclick' // Link reference
-        } 
-      })
-
-Ignore targets
-=======================
-
-.. code:: javascript
-  
-    import { ceasefire } from 'yogafire';
-
-    ceasefire({
-      ignoreSuspects: ['.suspect1', '.suspect2']
-    })
-    
-
-Remove delegated events
-=======================
-
-.. code:: javascript
-  
-    import { ceasefire } from 'yogafire';
-
-    ceasefire({
-      removeEvents: [
-          'mousemove:dblclick',
-          'blur'
-      ]
-    })
-
-
-Single events
-=============
-
-.. code:: javascript
-  
-    const singleCeaseFires = fire(['.suspect1', '#suspect2'], 'click', () => console.log('Hello World!'), false)
-
-
-Remove single events
-====================
-
-.. code:: javascript
-
-    singleCeaseFires.map(ceaseFire => ceaseFire())
 
 
 Details
