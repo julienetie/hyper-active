@@ -34,39 +34,41 @@ const { mousedown, click } = yogafire;
 
 
 describe('Closest', () => {
-    it('click > closest > fire 1st suspect > should trigger the handler', done => {
-        const one = () => done();
-        const two = noop;
-        const three = noop;
-        click.closest(closest1, closest2, closest3)
-            .fire(one, two, three);
-        setTimeout(() => inner1.dispatchEvent(clickEvent), delay[0]);
-    });
-    it('click > closest > fire 2nd suspect > should trigger the handler', done => {
-        const two = () => done();
-        const one = noop;
-        const three = noop;
-        click.closest(closest1, closest2, closest3)
-            .fire(one, two, three);
-        setTimeout(() => inner2.dispatchEvent(clickEvent), delay[0]);
-    });
-    it('click > closest > fire 3rd suspect > should trigger the handler', done => {
-        const three = () => done();
-        const one = noop;
-        const two = noop;
-        click.closest(closest1, closest2, closest3)
-            .fire(one, two, three);
-        setTimeout(() => inner3.dispatchEvent(clickEvent), delay[0]);
-    });
+    // it('click > closest > fire 1st suspect > should trigger the handler', done => {
+    //     const one = () => done();
+    //     const two = noop;
+    //     const three = noop;
+    //     click.closest(closest1, closest2, closest3)
+    //         .fire(one, two, three);
+    //     setTimeout(() => inner1.dispatchEvent(clickEvent), delay[0]);
+    // });
+    // it('click > closest > fire 2nd suspect > should trigger the handler', done => {
+    //     const two = () => done();
+    //     const one = noop;
+    //     const three = noop;
+    //     click.closest(closest1, closest2, closest3)
+    //         .fire(one, two, three);
+    //     setTimeout(() => inner2.dispatchEvent(clickEvent), delay[0]);
+    // });
+    // it('click > closest > fire 3rd suspect > should trigger the handler', done => {
+    //     const three = () => done();
+    //     const one = noop;
+    //     const two = noop;
+    //     click.closest(closest1, closest2, closest3)
+    //         .fire(one, two, three);
+    //     setTimeout(() => inner3.dispatchEvent(clickEvent), delay[0]);
+    // });
 
-    it('click > closest > fireAll 1st suspect > should trigger all handlers', done => {
-        const two = () => done();
-        const one = noop;
-        const three = noop;
-        click.closest(closest1, closest2, closest3)
-            .fireAll(one, two, three);
-        setTimeout(() => inner1.dispatchEvent(clickEvent), delay[0]);
-    });
+     it('click > closest > fireAll 1st suspect > should trigger all handlers', done => {
+        let count = 0;
+        const allFired = count => count === 3 && done();
+         const two = () => {count++; allFired(count)};
+         const one = () => {count++; allFired(count)};
+         const three = () => {count++; allFired(count)};
+         click.closest(closest1, closest2, closest3)
+             .fireAll(one, two, three);
+         setTimeout(() => inner1.dispatchEvent(clickEvent), delay[1]);
+     });
 });
 
 
