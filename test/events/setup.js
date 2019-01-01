@@ -4,7 +4,7 @@ mocha.setup({
     asyncOnly: true
 });
 const expect = chai.expect;
-const yogafireFn = yogafire.yogafire;
+// const yogafireFn = yogafire.yogafire;
 
 
 const flashTarget = target => {
@@ -29,6 +29,12 @@ const flashTarget = target => {
 }
 
 const clickEvent = new MouseEvent('click', {
+    view: window,
+    bubbles: true,
+    cancelable: true
+});
+
+const mousedownEvent = new MouseEvent('mousedown', {
     view: window,
     bubbles: true,
     cancelable: true

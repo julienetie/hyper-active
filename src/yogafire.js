@@ -53,6 +53,22 @@ const yogafirePartial = () => {
                 Array.isArray(suspectsSynonomous)
             ].some(typeCheckValue => typeCheckValue);
 
+
+            console.log('suspectsSynonomous', suspectsSynonomous)
+            // const isSuspectsValid = suspectsSynonomous.every(value =>{
+            //     switch(value){
+            //         case document:
+            //         case window:
+            //         case typeof value === 'string' ? value : null:
+            //         case value instanceof Element ? value : null:
+            //         case isArray(value) ? value : null: 
+            //             return true;
+            //         default:
+            //             return false;
+            //     }
+            // })
+
+
             if (!isSuspectsValid) {
                 error(suspectsSynonomous, 'suspect|suspects', '*#suspect');
             }

@@ -1,6 +1,6 @@
 {
   "name": "yogafire",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "description": "A Flexible Event Delegation System",
   "main": "dist/yogafire.js",
   "jsnext:main": "dist/yogafire.js",
@@ -9,7 +9,7 @@
     "test": "./node_modules/.bin/ava",
     "e2e": "node_modules/.bin/testcafe chrome  ./test/e2e/test.js --app 'http-server ./ -s'",
     "watch-test": "./node_modules/.bin/nodemon -q -x \"yarn test\"",
-    "watch": "rollup -c ./setup/config.umd.js -w",
+    "watch": "rollup -c ./setup/config.es.js -w",
     "lint": "./node_modules/.bin/eslint ./src/*"
   },
   "repository": {

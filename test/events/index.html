@@ -10,7 +10,7 @@
 <body>
     <script src="/node_modules/mocha/mocha.js"></script>
     <script src="/node_modules/chai/chai.js"></script>
-    <script src="../../dist/es5/yogafire.umd.js"></script>
+    <script src="../../dist/yogafire.umd.js"></script>
     <!-- MOCHA REPORTER -->
     <section class="mocha-wrapper">
         <div id="mocha"></div> 
@@ -18,15 +18,27 @@
 
     <!-- EVENTS CONTAINER -->
     <div id="test-container">
-        <span class="one"></span>
-        <span class="two"></span>
-        <span class="three"></span>
+        <span class="closest-outer">
+            <span class="1">
+                <span class="inner-1"></span>
+            </span>
+            <span class="2">
+                <span class="inner-2"></span>
+            </span>
+            <span class="3">
+                <span class="inner-3"></span>
+            </span>
+        </span>
+        <span class="contains-outer">
+            <span class="contains-inner"></span>
+        </span>
+        <span class="is"></span>
         <span class="four"></span>
         <span class="five"></span>
-        <span class="six"></span>
+        
     </div>
     <!-- PREVENTION FROM USER INTERACTION -->
-    <div id="cant-touch"></div>
+    <!-- <div id="cant-touch"></div> -->
     <script src="setup.js"></script>
     <script src="test.js"></script>
     <script>

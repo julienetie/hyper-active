@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-
+<meta name="viewport" content="width=device-width">
 <head>
     <meta charset="UTF-8">
     <title>YogaFire</title>
@@ -12,7 +12,9 @@
         width: 100%;
         height: 100%;
     }
-    
+    *{
+        user-select: none;
+    }
     .target1,
     .target2,
     #target3 {
@@ -35,6 +37,14 @@
         margin-left: 40rem;
         background: green;
     }
+
+        #target4 {
+              padding: 1rem;
+        position: absolute;
+        top: 30%;
+        margin-left: 40%;
+        background: pink;
+    }
     </style>
 </head>
 
@@ -53,57 +63,12 @@
     <div id='target3' id="target3">
         TEST 3<div>fwefwef</div>
     </div>
-    <script src="../dist/yogafire.umd.js"></script>
-    <script>
-
-    const yf = yogafire.yogafire;
-
-
-
-    function clickMouseoverAction(eventObject) {
-        const e = eventObject.e;
-        const target = eventObject.target;
-        const match = eventObject.match;
-        const selector = eventObject.selector;
-        const dataSelector = eventObject.dataSelector;
-        const suspect =  eventObject.suspect;
-        console.log('clickMouseoverAction \n', JSON.stringify({
-            match, selector, dataSelector, suspect
-        }, null, 4));
-    };
-
-    // function blurMousedownAction(e) {
-    //     console.log('blurMousedownAction', e.target, e.type);
-    // };
-
-
-
-    yf({
-        mousedown: {
-            suspect: 'target-x | ^',
-            handler: clickMouseoverAction
-        }
-        // 'dblclick:click': {
-        //     suspect: '#target3',
-        //     handler: 'mousemove'
-        // }
-    });
-
-    // const singleEvent = e => console.log('Single *** Event' + e.target);
-
-    // const singleCeaseFire = fire('.target2', 'click', singleEvent, false);
-
-    // setTimeout(singleCeaseFire, 3000);
-
-    // ceaseFire({
-    //     ignoreSuspects: {
-    //         mousemove: ['.target1', '.target2'], 
-    //         'dblclick:click': '#target3' 
-    //     },
-    //     removeEvents: ['dblclick:click', 'mousemove']
-    // });
-
-    
+    <div id='target4' id="target4">
+        TEST $<div>Zip zap</div>
+    </div>
+    <script type="module" src="../dist/yogafire.js"></script>
+    <script type="module" src="demo.js"></script>
+   
     </script>
 </body>
 

@@ -6,7 +6,7 @@ export default {
 	input: './src/index.js',
 	plugins: [
 		buble({
-            target: { chrome: 60, firefox: 53, safari: 10, edge: 14 }
+            target: { chrome: 60, firefox: 53, safari: 10, edge: 15 }
         }),
 		nodeResolve({
 			jsnext: true,
