@@ -12,32 +12,29 @@ Alpha: Not ready for production.
 - If the target matches one of the specified nodes
 - Fire the respective callback i.e. (nodes[0] will trigger callbacks[0])
 ```javascript
-click.is(...nodes).fire(...callbacks);
+click.equals(...suspects).fire(...handlers);
 ```
 - Same as above except...
 - If one of the specified nodes is the target's ancestor 
 ```javascript
-click.closest(...nodes).fire(...callbacks);
+click.closest(...suspects).fire(...handlers);
 ```
 
 - Same as above except...
 - If the target contains one of the specified nodes
 ```javascript
-click.contains(...nodes).fire(...callbacks);
+click.contains(...suspects).fire(...handlers);
 ```
 
-- The inverse of the above...
+- Add rules to exclude certain elements respectively...
 ```javascript
-click.is.not(...nodes).fire(...callbacks);
-click.not.contains(...nodes).fire(...callbacks);
-click.not.closest(...nodes).fire(...callbacks);
+click.equals(...nodes).fire(...callbacks).not.contains(...exempt)
+click.closest(...nodes).fire(...callbacks).not.equals(...exempt)
+click.contains(...nodes).fire(...callbacks).not.closest(...exempt)
 ```
-
-### fireAll()
-- Will fire all callbacks providing that a target is matched
-```javascript
-dblclick.contains(...nodes).fireAll(...callbacks);
-```
+- Suspects: Elements
+- Handlers: Callback functions
+- Exempt: Elements (or an array of elements to correspond to the respective suspect)
 
 ### debounce() 
 Will debounce the specified callbacks
