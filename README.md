@@ -28,9 +28,9 @@ click.contains(...suspects).fire(...handlers);
 
 - Add rules to exclude certain elements respectively...
 ```javascript
-click.equals(...nodes).not.contains(...exempt).fire(...callbacks)
-click.closest(...nodes).not.equals(...exempt).fire(...callbacks)
-click.contains(...nodes).not.closest(...exempt).fire(...callbacks)
+click.equals(...suspects).not.contains(...exclusions).fire(...callbacks)
+click.closest(...suspects).not.equals(...exclusions).fire(...callbacks)
+click.contains(...suspects).not.closest(...exclusions).fire(...callbacks)
 ```
 - Suspects: Elements
 - Handlers: Callback functions
