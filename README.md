@@ -18,12 +18,15 @@ click.equals(...suspects).fire(...handlers);
 - If one of the specified nodes is the target's ancestor 
 ```javascript
 click.closest(...suspects).fire(...handlers);
+
+// click.closest.euqals(...
 ```
 
 - Same as above except...
 - If the target contains one of the specified nodes
 ```javascript
 click.contains(...suspects).fire(...handlers);
+// click.contains.euqals(...
 ```
 
 - Add rules to exclude certain elements respectively...
