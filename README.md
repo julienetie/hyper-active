@@ -14,7 +14,8 @@ If the target is equal to a suspect, fire the respective handler.
 click.equals(...suspects).fire(...handlers);
 ```
 This eliminates the need for conditional logic per-element when delegating for a single event. 
-Every time you initialise an event it creates a _delegate_
+Every time you initialise an event it adds a _delegate_ to the event. A delegate is just a set of conditions 
+define as seen above.
 
 If one handler is provided for multiple suspects either triggered suspect will fire the handler.
 ```javascript
@@ -52,8 +53,7 @@ If a suspect is contained within the target fire the respective handler.
 click.contains(...suspects).fire(...handlers);
 ``` 
 Multiple suspects, one handler.
-```
-javascript
+```javascript
 
 click.closest(...suspects).fire(handler);
 ```
