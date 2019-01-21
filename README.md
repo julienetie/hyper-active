@@ -143,5 +143,6 @@ click.replenish('left-sidebar',el1,null, el3, null, null, el6);
 This will automatically remove all references to elements that no longer exist 
 or that are not apart of the DOM. This will prevent memeory leaks.
 It's ideal to call it during idletime via requestIdleCallback.
-
+```javascript
 click.replenish();
+```
