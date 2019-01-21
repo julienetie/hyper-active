@@ -73,8 +73,24 @@ click.contains(...suspects).not.contains(...excludedSuspects).fire(...handlers);
 ### Remove 
 Removes: 
 - The event listener from the document
-- All delegates associated with that event
+- All delegates associated with the event
 
 ```javascript
 click.remove();
+
 ```
+### Non-document EventTarget
+By default `document` is the EventTarget when using properties from events directly. 
+There are scenarios where you may need to delegate from `windodw`.
+You can delegate from the window object when using the event as a function.
+```javascript
+
+click(window).closest(...suspects).fire(...handlers);
+``` 
+You can also delegate events from any element but this should be avoided if possible as it defeats the purpose of event delegation.
+
+```javascript
+
+click(sideBar1,sideBar2).closest(...suspects).fire(...handlers);
+``` 
+### 
