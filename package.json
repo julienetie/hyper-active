@@ -1,6 +1,6 @@
 {
   "name": "yogafire",
-  "version": "0.2.9",
+  "version": "0.3.0",
   "description": "A Flexible Event Delegation System",
   "main": "dist/yogafire.js",
   "jsnext:main": "dist/yogafire.js",

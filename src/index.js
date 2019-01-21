@@ -211,14 +211,6 @@ const firePartial = reference => {
         return reference;
     };
 }
-// click.closest(document, el2, el3).not.closest(el7,el8,el9).fire(fn1,fn2,fn3)
-// click.closest(document, el2, el3).not.closest([ela,elb,elc],el8,el9).fire(fn1,fn2,fn3)
-// click.closest(document, el2, el3).not.equal(el7,el8,el9).fire(fn1,fn2,fn3)
-// click.closest(document, el2, el3).not.equal([ela,elb,elc],el8,el9).fire(fn1,fn2,fn3)
-// click.closest(document, el2, el3).not.contains(el7,el8,el9).fire(fn1,fn2,fn3)
-// click.closest(document, el2, el3).not.contains([ela,elb,elc],el8,el9).fire(fn1,fn2,fn3)
-// click.closest(document,el2, el3).notAll.contains([ela,elb,elc]).fireAl
-
 
 const notClosestPartial = (reference) => {
     return (...exclusions) => {
@@ -315,7 +307,9 @@ const event = eventType => {
     return props;
 }
 
-
+export const click = event('click');
+export const input = event('input');
+export const keyup = event('keyup');
+export const keydown = event('keydown');
 export const mousedown = event('mousedown');
 export const mousemove = event('mousemove');
-export const click = event('click');
