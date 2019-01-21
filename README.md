@@ -70,6 +70,14 @@ click.closest(...suspects).not.contains(...excludedSuspects).fire(...handlers);
 // Contains of X,Y,Z but is not an ancestor of A,B,C
 click.contains(...suspects).not.contains(...excludedSuspects).fire(...handlers);
 ```
+
+### Delegate Names (*TBA*) 
+Name the delegate to reference it in the future. 
+```javascript
+
+click('nav-buttons').equals(...suspects).fire(...handlers);
+```
+
 ### Remove 
 Removes: 
 - The event listener from the document
@@ -77,20 +85,63 @@ Removes:
 
 ```javascript
 click.remove();
-
 ```
-### Non-document EventTarget
+You can also remove a specific delegate which will return true if it was removed 
+and false if it did not exist.
+*TBA*
+```javascript
+click.remove('nav-buttons');
+```
+
+
+### Non-document EventTarget (*TBA*)
 By default `document` is the EventTarget when using properties from events directly. 
 There are scenarios where you may need to delegate from `windodw`.
 You can delegate from the window object when using the event as a function.
 ```javascript
 
 click(window).closest(...suspects).fire(...handlers);
+
+// or 
+
+click({
+ name: 'nav-buttons',
+ eventTarget: window
+}).closest(...suspects).fire(...handlers);
 ``` 
 You can also delegate events from any element but this should be avoided if possible as it defeats the purpose of event delegation.
 
 ```javascript
 
-click(sideBar1,sideBar2).closest(...suspects).fire(...handlers);
+click(sidebar).contains(...suspects).fire(...handlers);
 ``` 
-### 
+
+### Options (*TBA*)
+You can pass options to the event listener by providing the options property.
+```javascript
+click({
+ name: 'nav-buttons',
+ eventTarget: window,
+ options:{
+   once: true,
+   passive: true,
+   capture: true
+ }
+}).equals(...suspects).fire(...handlers);
+``` 
+
+### Replenish (*TBA*)
+Updates the references for the left-sidebar delegate respectively.
+```javascript
+click.replenish('left-sidebar',el1,el2, el3);
+```
+To preserve references use null
+```javascript
+click.replenish('left-sidebar',el1,null, el3, null, null, el6);
+```
+### Auto Replenish (*TBA*)
+This will automatically remove all references to elements that no longer exist 
+or that are not apart of the DOM. This will prevent memeory leaks.
+It's ideal to call it during idletime via requestIdleCallback.
+
+click.replenish();
