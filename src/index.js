@@ -1,16 +1,45 @@
-const createHandler = (products) => {
+/** 
+ * The sequence of public chained methods.
+ * This allows yogafire to determine the outcome.
+ * A sequence must be emptied once fulfilled. 
+ */
+const sequence = [];
+const delegateReferences = {};
 
+const createHandler = (products) => {
     mousedownHandler = e => {
         const target = e.target;
-        products.map(product => {
-            const { suspects, relation, handlers, delay, tail, callType } = product;
+        products.map(reference => {
+            const { relation, handlers, suspects, delay, tail, exclusions, exclusionType } = delegateReferences[reference];
+
+            switch (exclusionType) {
+                // Ignore if target is contained in an element on the exclusion list
+                case 'not-closest':
+                    if (exclusions.some(exclusion => exclusion.contains(target))) {
+                        return;
+                    }
+                    break;
+                    // Ignore if an element on the exclusion list is contained within the target 
+                case 'not-contains':
+                    if (exclusions.some(exclusion => target.contains(exclusion))) {
+                        return;
+                    }
+                    break;
+            }
+
             switch (relation) {
-                case 'is':
-                    const is = suspects.find(element => target === element);
-                    if (is) {
+                case 'equals':
+                    // Ignore if target is on the exclusion list
+                    if (exclusions && exclusions.includes(target)) {
+                        return;
+                    }
+
+                    const equals = suspects.find(element => target === element);
+                    if (equals) {
                         suspects.find((suspect, i) => {
                             if (suspect === target) {
-                                handlers[i]({ e, target, suspect, i });
+                                const index = handlers.length === 1 ? 0 : i;
+                                handlers[index]({ e, target, suspect, i });
                                 return true;
                             }
                             return false;
@@ -19,38 +48,44 @@ const createHandler = (products) => {
                     }
                     break;
                 case 'closest':
-                case 'contains':
-                    const isClosest = relation === 'closest';
-                    const resolvedRelation = suspects
-                        .find(element => {
-                            if (isClosest) {
-                                // console.log('closest')
-                                return element.contains(target) ? element : null;
-                            } else {
-                                // console.log('contains')
-                                return target.contains(element) ? element : null;
-                            }
-                        });
-                    if (resolvedRelation) {
-                        switch (callType) {
-                            case 'fire':
-                                suspects.find((suspect, i) => {
-                                    if (suspect === resolvedRelation) {
-                                        handlers[i]({ e, target, suspect, i });
-                                        return true;
-                                    }
-                                    return false;
-                                });
-                                return;
-                            case 'fireAll':
-                                suspects.forEach((suspect, i) =>
-                                    handlers[i]({ e, target, suspect, i })
-                                );
-                                return;
+                    {
+                        const match = suspects
+                            .find(element => {
+                                return element.contains(target) && target !== element ? element : null;
+                            });
+                        if (match) {
+                            suspects.find((suspect, i) => {
+                                if (suspect === match) {
+                                    const index = handlers.length === 1 ? 0 : i;
+                                    handlers[index]({ e, target, suspect, i });
+                                    return true;
+                                }
+                            });
                         }
                     }
                     break;
+                case 'contains':
+                    const matches = suspects
+                        .reduce((acc, element, i) => {
+                            if (target.contains(element) && target !== element) {
+                                const index = handlers.length === 1 ? 0 : i;
+                                const item = {
+                                    suspect: element,
+                                    handler: handlers[index],
+                                    i
+                                }
+                                acc.push(item);
+                            }
+                            return acc;
+                        }, []);
+
+                    if (matches.length > 0) {
+                        matches.forEach(({ handler, element, i }) => {
+                            handler({ e, target, suspect: e, i });
+                        });
+                    }
             }
+
         });
     }
 }
@@ -121,63 +156,114 @@ const limiters = {
 }
 
 
+const addEventListenerRegister = {};
 
-const firePartial = (callType, eventType, relation, suspectsType, suspects, sequence, delay, tail) => {
+const getExlcusionType = (sequence) => {
+    switch (true) {
+        case sequence.includes('not-closest'):
+            return 'not-closest';
+        case sequence.includes('not-contains'):
+            return 'not-contains';
+        case sequence.includes('not-equals'):
+            return 'not-equals';
+    }
+    return null;
+}
+
+
+// const firePartial = (eventType, relation, suspectsType, suspects, delay, tail) => {
+const firePartial = reference => {
     return (...handlers) => {
-        sequence += ` ${callType}`;
+        sequence.push('fire');
+        const delegate = delegateReferences[reference];
+        const { eventType, relation, delay, tail } = delegate;
+
+        /** 
+         * If eventListener of the eventType does not exist create a new one.
+         */
         const createNewEventListener = events[eventType] === undefined;
         if (createNewEventListener) {
             events[eventType] = [];
-            document.addEventListener(eventType, mousedownHandlerWrapper, false);
+            const useCapture = false;
+            addEventListenerRegister[eventType] = {
+                handler: mousedownHandlerWrapper,
+                useCapture
+            }
+            document.addEventListener(eventType, mousedownHandlerWrapper, useCapture);
         }
 
         const limiter = sequence.includes('debounce') ?
             limiters['debounce'] : sequence.includes('throttle') ?
             limiters['throttle'] : limiters['direct'];
 
-        events[eventType].push({
-            relation,
-            suspects,
-            callType,
-            handlers: handlers.map(handler => limiter(handler, delay, tail)),
-            ref: null,
-            killType: null
-        });
+        const exclusionType = getExlcusionType(sequence);
 
+        /** 
+         * Empty the sequence as this is the end of the road.
+         */
+        sequence.length = 0;
+
+        delegateReferences[reference].handlers = handlers.map(handler => limiter(handler, delay, tail))
+        delegateReferences[reference].exclusionType = exclusionType;
+        events[eventType].push(reference);
         const products = events[eventType];
         createHandler(products);
+        return reference;
     };
 }
+// click.closest(document, el2, el3).not.closest(el7,el8,el9).fire(fn1,fn2,fn3)
+// click.closest(document, el2, el3).not.closest([ela,elb,elc],el8,el9).fire(fn1,fn2,fn3)
+// click.closest(document, el2, el3).not.equal(el7,el8,el9).fire(fn1,fn2,fn3)
+// click.closest(document, el2, el3).not.equal([ela,elb,elc],el8,el9).fire(fn1,fn2,fn3)
+// click.closest(document, el2, el3).not.contains(el7,el8,el9).fire(fn1,fn2,fn3)
+// click.closest(document, el2, el3).not.contains([ela,elb,elc],el8,el9).fire(fn1,fn2,fn3)
+// click.closest(document,el2, el3).notAll.contains([ela,elb,elc]).fireAl
 
 
-
-const debouncePartial = (eventType, relation, suspectsType, suspects, sequence) => {
-    return (delay, tail) => {
-        sequence += 'debounce';
+const notClosestPartial = (reference) => {
+    return (...exclusions) => {
+        sequence.push('not-closest');
+        delegateReferences[reference].exclusions = exclusions;
         return {
-            fire: firePartial('fire', eventType, relation, suspectsType, suspects, sequence, delay, tail),
-            fireAll: firePartial('fireAll', eventType, relation, suspectsType, suspects, sequence, delay, tail)
+            fire: firePartial(reference)
+        }
+    }
+}
+
+const notContainsPartial = (reference) => {
+    return (...exclusions) => {
+        sequence.push('not-contains');
+        delegateReferences[reference].exclusions = exclusions;
+        return {
+            fire: firePartial(reference)
+        }
+    }
+}
+
+const debouncePartial = (eventType, relation, suspectsType, suspects) => {
+    return (delay, tail) => {
+        sequence.push('debounce');
+        return {
+            fire: firePartial('fire', eventType, relation, suspectsType, suspects, delay, tail),
+            fireAll: firePartial('fireAll', eventType, relation, suspectsType, suspects, delay, tail)
         }
     }
 }
 
 
-const throttlePartial = (eventType, relation, suspectsType, suspects, sequence) => {
+const throttlePartial = (eventType, relation, suspectsType, suspects) => {
     return (delay, tail) => {
-        sequence += 'throttle';
+        sequence.push('throttle');
         return {
-            fire: firePartial('fire', eventType, relation, suspectsType, suspects, sequence, delay, tail),
-            fireAll: firePartial('fireAll', eventType, relation, suspectsType, suspects, sequence, delay, tail)
+            fire: firePartial('fire', eventType, relation, suspectsType, suspects, delay, tail),
+            fireAll: firePartial('fireAll', eventType, relation, suspectsType, suspects, delay, tail)
         }
     }
 }
-
 
 
 
 const event = eventType => {
-    let sequence = '';
-    sequence += eventType;
     const props = () => {
         return `@TBA Details about the events in use
 				- number of registered events of this type 
@@ -185,29 +271,49 @@ const event = eventType => {
 				- number of active events of this type
 				- number of suspende events of this type`
     };
-    const relation = relationType => {
+    const relation = (type, isNot) => {
+
         return (...suspects) => {
-            sequence += ` ${relationType}`;
+
+            sequence.push('event');
+            if (isNot === 'not') {
+                sequence.push('not');
+            }
+            sequence.push(type);
             // Suspects as parameters.
             const isNamedElements = suspects.length === 1 && Object.keys(suspects[0])[0] instanceof Element;
-            const suspectsType = isNamedElements ? 'object' : 'params';
+
+
+            // Create Reference
+            const reference = Symbol();
+
+            delegateReferences[reference] = {
+                suspects,
+                relation: type,
+                eventType
+            }
             return {
-                fire: firePartial('fire', eventType, relationType, suspectsType, suspects, sequence),
-                fireAll: firePartial('fireAll', eventType, relationType, suspectsType, suspects, sequence),
-                debounce: debouncePartial(eventType, relationType, suspectsType, suspects, sequence),
-                throttle: throttlePartial(eventType, relationType, suspectsType, suspects, sequence),
+                not: {
+                    closest: notClosestPartial(reference),
+                    contains: notContainsPartial(reference),
+                },
+                fire: firePartial(reference),
+                debounce: debouncePartial(reference),
+                throttle: throttlePartial(reference),
             };
         }
     }
+
     props.closest = relation('closest');
     props.contains = relation('contains');
-    props.is = relation('is');
+    props.equals = relation('equals');
+    props.remove = () => {
+        const { handler, useCapture } = addEventListenerRegister[eventType];
+        delete events[eventType];
+        document.removeEventListener(eventType, handler, useCapture);
+    }
     return props;
 }
-
-
-
-
 
 
 export const mousedown = event('mousedown');

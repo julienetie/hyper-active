@@ -22,26 +22,33 @@ window.mousedown = mousedown
 
 const makeColor = () => `rgb(${Math.floor(Math.random() * 255)},${Math.floor(Math.random() * 255)},${Math.floor(Math.random() * 255)})`;
 
-const helloWorld1 = ({target})=>{
-	 console.log('Target1:');
-	target1.style.backgroundColor = makeColor();
-}
-const helloWorld2 = ({target})=>{
-	 console.log('Target2:');
-	 target2.style.backgroundColor = makeColor();
-}
-const helloWorld3 = ({target})=>{
-	console.log('Target3:');
-	target3.style.backgroundColor = makeColor();
-}
-const suspects = [target1, target2]
-const handlers = [helloWorld1, helloWorld2]
-mousedown.closest(...suspects).debounce(1000, true).fire(...handlers);
-mousedown.closest(target4).throttle(2000).fire(({suspect}) => {
-	console.log('Target4');
-	suspect.style.background = makeColor();
-});
-mousedown.closest(target3).fire(({suspect}) => {
-	console.log('Target3');
-	suspect.style.background = makeColor();
-});
+ const helloWorld1 = ({target})=>{
+ 	 console.log('Target1:');
+ 	target1.style.backgroundColor = makeColor();
+ }
+ const helloWorld2 = ({target})=>{
+ 	 console.log('Target2:');
+ 	 target2.style.backgroundColor = makeColor();
+ }
+ const helloWorld3 = ({target})=>{
+ 	console.log('Target3:');
+ 	target3.style.backgroundColor = makeColor();
+ }
+ const suspects = [target1, target2]
+ const handlers = [helloWorld1, helloWorld2]
+
+
+// mousedown.contains(...suspects).fire(...handlers);
+mousedown.closest(...suspects).fire(...handlers);
+
+
+ // mousedown.closest(...suspects).debounce(1000, true).fire(...handlers);
+ 
+ // mousedown.closest(target4).throttle(2000).fire(({suspect}) => {
+ // 	console.log('Target4');
+ // 	suspect.style.background = makeColor();
+ // });
+ // mousedown.closest(target3).fire(({suspect}) => {
+ // 	console.log('Target3');
+ // 	suspect.style.background = makeColor();
+ // });
