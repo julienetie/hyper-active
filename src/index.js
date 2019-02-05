@@ -6,8 +6,8 @@
 const sequence = [];
 const delegateReferences = {};
 
-const createHandler = (products) => {
-    mousedownHandler = e => {
+const createHandler = (products, eventType) => {
+    eventHandlers[eventType] = e => {
         const target = e.target;
         products.map(reference => {
             const { relation, handlers, suspects, delay, tail, exclusions, exclusionType } = delegateReferences[reference];
@@ -95,10 +95,13 @@ const uniqueKeyRegistry = [];
 const events = {};
 const suspectHandlerStore = [];
 
-let mousedownHandler = () => {};
-const mousedownHandlerWrapper = e => {
-    mousedownHandler(e);
-}
+// let mousedownHandler = () => {};
+const eventHandlers = {};
+
+// const mousedownHandlerWrapper = e => {
+// 	handlers[](e);
+//     mousedownHandler(e);
+// }
 
 
 function throttle(callback, limit) {
@@ -177,37 +180,43 @@ const firePartial = reference => {
         sequence.push('fire');
         const delegate = delegateReferences[reference];
         const { eventType, relation, delay, tail } = delegate;
-
-        /** 
-         * If eventListener of the eventType does not exist create a new one.
-         */
-        const createNewEventListener = events[eventType] === undefined;
-        if (createNewEventListener) {
-            events[eventType] = [];
-            const useCapture = false;
-            addEventListenerRegister[eventType] = {
-                handler: mousedownHandlerWrapper,
-                useCapture
-            }
-            document.addEventListener(eventType, mousedownHandlerWrapper, useCapture);
-        }
-
         const limiter = sequence.includes('debounce') ?
             limiters['debounce'] : sequence.includes('throttle') ?
             limiters['throttle'] : limiters['direct'];
 
-        const exclusionType = getExlcusionType(sequence);
 
         /** 
          * Empty the sequence as this is the end of the road.
          */
         sequence.length = 0;
-
+        const delegateHandlers = delegateReferences[reference].handlers;
         delegateReferences[reference].handlers = handlers.map(handler => limiter(handler, delay, tail))
+        const exclusionType = getExlcusionType(sequence);
         delegateReferences[reference].exclusionType = exclusionType;
+
+        /** 
+         * If eventListener of the eventType does not exist create a new one.
+         */ 
+        if (!events[eventType]) {
+            events[eventType] = [];
+        }
+        // Add reference of delegate to events.eventType
         events[eventType].push(reference);
-        const products = events[eventType];
-        createHandler(products);
+        
+		
+		// Create the handler
+		const products = events[eventType];
+        createHandler(products, eventType);
+
+        if(!addEventListenerRegister[eventType]){
+        	const handler = eventHandlers[eventType]
+        	const useCapture = false;
+        	addEventListenerRegister[eventType] = {
+                handler,
+                useCapture
+            }
+            document.addEventListener(eventType, handler, useCapture);
+        }
         return reference;
     };
 }
@@ -308,8 +317,13 @@ const event = eventType => {
 }
 
 export const click = event('click');
+export const dblclick = event('dblclick');
 export const input = event('input');
 export const keyup = event('keyup');
 export const keydown = event('keydown');
+export const keypress = event('keypress');
 export const mousedown = event('mousedown');
+export const mouseenter = event('mouseenter');
+export const mouseleave = event('mouseleave');
 export const mousemove = event('mousemove');
+export const mouseout = event('mouseout');

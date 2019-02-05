@@ -40,6 +40,8 @@ const makeColor = () => `rgb(${Math.floor(Math.random() * 255)},${Math.floor(Mat
 
 // mousedown.contains(...suspects).fire(...handlers);
 mousedown.closest(...suspects).fire(...handlers);
+mousedown.equals(...suspects).fire(...handlers);
+mousemove.closest(target3).fire(helloWorld3);
 
 
  // mousedown.closest(...suspects).debounce(1000, true).fire(...handlers);
