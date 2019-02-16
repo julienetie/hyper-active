@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Typical</title>
+	<style>
+	section {
+		position: relative;
+		float:left;
+	}
+		.box{
+			width: 5rem;
+			height: 5rem;
+			background: linear-gradient(lime, green);
+			padding: 1rem;
+			margin: 1rem;
+			cursor: pointer;
+		}
+		.circle{
+			border-radius: 100%;
+		}
+
+		.mousemove1{
+			background: linear-gradient(lime, green);
+		}
+		.mousemove2{
+			background: linear-gradient(#42f4f4, blue);
+		}
+		.mousemove3{
+			background: linear-gradient(#f036f9, red);
+		}
+		.mousemove4{
+			background: linear-gradient(#fffb96, yellow);
+		}
+		.mousemove5{
+			background: linear-gradient(#e0e0e0, grey);
+		}
+		.mousemove6{
+			background: linear-gradient(#fcabf5, pink);
+		}
+	</style>
+</head>
+<body>
+
+<section>
+	<header>Mouse Move Test</header>
+	<div class="mousemove1 box">
+		Mousemove 1
+		<div>Inner</div>
+	</div>
+	<div class="mousemove2 box">
+		Mousemove 2
+		<div>Inner</div>
+	</div>
+	<div class="mousemove3 box">
+		Mousemove 3
+		<div>Inner</div>
+	</div>
+</section>
+<section>
+	<header>Mouse Move Test</header>
+	<div class="mousemove4 box circle">
+		Mousemove 4
+		<div>Inner</div>
+	</div>
+	<div class="mousemove5 box circle">
+		Mousemove 5
+		<div>Inner</div>
+	</div>
+	<div class="mousemove6 box circle">
+		Mousemove 6
+		<div>Inner</div>
+	</div>
+</section>
+<script type="module" src="script.js"></script>
+</body>
+</html>
