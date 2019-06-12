@@ -1,5 +1,5 @@
 ```
-Alpha: Not ready for production.
+Depreciated: A better version will be built-into Wavefront
 ```
 # yogafire
 
