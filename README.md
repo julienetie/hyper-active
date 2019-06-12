@@ -1,5 +1,5 @@
 ```
-Depreciated: A better version will be built-into Wavefront
+Discontinued: A better version will be built-into Wavefront. Some minor cleanups will continue to be made.
 ```
 # yogafire
 
